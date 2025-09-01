@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Number Say Hi</title>
+    <title>numbersayhi.fyi</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"></script>
     <style>
@@ -215,14 +215,32 @@
     </style>
 </head>
 <body>
-    <div class="container">
-      
+<!--    <div class="container">
+        <div class="header">
+            <h1 class="logo">Numbers Say Hi</h1>
+            <p class="tagline">Track things in a not-grumpy way</p>
+        </div> -->
 
         <nav class="nav">
             <button class="nav-btn active" onclick="showSection('feedback')">Feedback Forms</button>
             <button class="nav-btn" onclick="showSection('orders')">Menu Orders</button>
             <button class="nav-btn" onclick="showSection('drinks')">Drink Testing</button>
         </nav>
+
+        <!-- Customer Survey Section (shown when ?form=ID is in URL) -->
+        <section id="customerSurvey" class="section" style="display: none;">
+            <div class="card">
+                <h3 id="surveyTitle">Feedback Survey</h3>
+                <form id="surveyForm">
+                    <div id="surveyQuestions"></div>
+                    <button type="button" class="btn" onclick="submitSurvey()">Submit Feedback</button>
+                </form>
+            </div>
+            <div class="card" id="thankYou" style="display: none;">
+                <h3>Thank you!</h3>
+                <p>Your feedback has been submitted.</p>
+            </div>
+        </section>
 
         <!-- Feedback Section -->
         <section id="feedback" class="section active">
@@ -277,15 +295,20 @@
                     <input type="text" id="newDrinkName" placeholder="e.g., Lavender Latte">
                 </div>
                 <div class="input-group">
-                    <label>Price</label>
-                    <input type="number" id="newDrinkPrice" step="0.01" placeholder="4.50">
+                    <label>Description</label>
+                    <input type="text" id="newDrinkDescription" placeholder="Oat milk, house lavender syrup, double shot">
                 </div>
-                <button class="btn btn-success" onclick="addMenuItem()">Add to Menu</button>
+                <button class="btn" onclick="addMenuItem()">Add to Menu</button>
             </div>
 
             <div class="card">
                 <h3>Current Menu</h3>
                 <div class="menu-grid" id="menuGrid"></div>
+            </div>
+
+            <div class="card" id="archiveSection" style="display: none;">
+                <h3>Archived Items</h3>
+                <div class="menu-grid" id="archiveGrid"></div>
             </div>
 
             <div class="card">
@@ -298,10 +321,6 @@
                     <div class="stat-card">
                         <div class="stat-number" id="todayOrders">0</div>
                         <div class="stat-label">Today's Orders</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="dailyRevenue">$0</div>
-                        <div class="stat-label">Daily Revenue</div>
                     </div>
                 </div>
                 <div id="topSellingDrink">
@@ -493,17 +512,17 @@
         // Menu/Orders Functions
         function addMenuItem() {
             const name = document.getElementById('newDrinkName').value;
-            const price = parseFloat(document.getElementById('newDrinkPrice').value);
+            const description = document.getElementById('newDrinkDescription').value;
             
-            if (!name || !price) {
-                showNotification('Please enter drink name and price', 'error');
+            if (!name || !description) {
+                showNotification('Please enter drink name and description', 'error');
                 return;
             }
 
             const menuItem = {
                 id: Date.now().toString(),
                 name: name,
-                price: price,
+                description: description,
                 created: new Date(),
                 active: true
             };
@@ -513,20 +532,39 @@
                     menuItems.push(menuItem);
                     renderMenu();
                     document.getElementById('newDrinkName').value = '';
-                    document.getElementById('newDrinkPrice').value = '';
-                    showNotification(`${name} added to menu! ☕`);
+                    document.getElementById('newDrinkDescription').value = '';
+                    showNotification(`${name} added to menu!`);
                 });
         }
 
         function renderMenu() {
+            const activeItems = menuItems.filter(item => item.active);
+            const archivedItems = menuItems.filter(item => !item.active);
+            
             const menuGrid = document.getElementById('menuGrid');
-            menuGrid.innerHTML = menuItems.filter(item => item.active).map(item => 
+            menuGrid.innerHTML = activeItems.map(item => 
                 `<div class="menu-item" onclick="recordOrder('${item.id}')">
                     <strong>${item.name}</strong>
-                    <div>$${item.price.toFixed(2)}</div>
-                    <small onclick="event.stopPropagation(); archiveItem('${item.id}')" style="color: rgba(255,255,255,0.7); cursor: pointer;">Archive</small>
+                    <div style="font-size: 12px; color: #666; margin-top: 4px;">${item.description}</div>
+                    <small onclick="event.stopPropagation(); archiveItem('${item.id}')" style="color: #999; cursor: pointer; display: block; margin-top: 8px;">Archive</small>
                 </div>`
             ).join('');
+
+            const archiveGrid = document.getElementById('archiveGrid');
+            const archiveSection = document.getElementById('archiveSection');
+            
+            if (archivedItems.length > 0) {
+                archiveSection.style.display = 'block';
+                archiveGrid.innerHTML = archivedItems.map(item => 
+                    `<div class="menu-item" style="opacity: 0.6;" onclick="unarchiveItem('${item.id}')">
+                        <strong>${item.name}</strong>
+                        <div style="font-size: 12px; color: #666; margin-top: 4px;">${item.description}</div>
+                        <small style="color: #999; display: block; margin-top: 8px;">Click to restore</small>
+                    </div>`
+                ).join('');
+            } else {
+                archiveSection.style.display = 'none';
+            }
         }
 
         function recordOrder(itemId) {
@@ -537,7 +575,6 @@
                 id: Date.now().toString(),
                 itemId: itemId,
                 itemName: item.name,
-                price: item.price,
                 timestamp: new Date()
             };
 
@@ -545,7 +582,7 @@
                 .then(() => {
                     orders.push(order);
                     loadOrderStats();
-                    showNotification(`Ordered: ${item.name} 🎯`);
+                    showNotification(`Ordered: ${item.name}`);
                 });
         }
 
@@ -556,6 +593,16 @@
                     if (item) item.active = false;
                     renderMenu();
                     showNotification('Item archived');
+                });
+        }
+
+        function unarchiveItem(itemId) {
+            db.collection('menuItems').doc(itemId).update({ active: true })
+                .then(() => {
+                    const item = menuItems.find(m => m.id === itemId);
+                    if (item) item.active = true;
+                    renderMenu();
+                    showNotification('Item restored to menu');
                 });
         }
 
@@ -577,7 +624,6 @@
                 
                 document.getElementById('totalOrders').textContent = orders.length;
                 document.getElementById('todayOrders').textContent = todayOrders.length;
-                document.getElementById('dailyRevenue').textContent = `$${todayOrders.reduce((sum, o) => sum + o.price, 0).toFixed(2)}`;
                 
                 // Find top selling drink today
                 const drinkCounts = {};
@@ -677,20 +723,80 @@
             const formId = urlParams.get('form');
             
             if (formId) {
-                // Show feedback submission interface
-                showFeedbackForm(formId);
+                // Show customer survey interface
+                showCustomerSurvey(formId);
             } else {
-                // Load initial data
+                // Load initial data for admin view
                 loadFeedbackStats();
                 loadOrderStats();
                 loadDrinkTestStats();
             }
         });
 
-        function showFeedbackForm(formId) {
-            // This would show a customer-facing feedback form
-            // For now, just redirect to admin view
-            showNotification('Feedback form loaded! (Customer interface coming soon)');
+        function showCustomerSurvey(formId) {
+            // Hide admin interface
+            document.querySelector('.nav').style.display = 'none';
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show customer survey
+            document.getElementById('customerSurvey').style.display = 'block';
+            
+            // Load the form from Firebase
+            db.collection('feedbackForms').doc(formId).get().then((doc) => {
+                if (doc.exists) {
+                    const formData = doc.data();
+                    document.getElementById('surveyTitle').textContent = formData.name;
+                    
+                    const questionsHtml = formData.questions.map((question, index) => 
+                        `<div class="input-group">
+                            <label>${question}</label>
+                            <input type="text" name="question_${index}" placeholder="Your answer...">
+                        </div>`
+                    ).join('');
+                    
+                    document.getElementById('surveyQuestions').innerHTML = questionsHtml;
+                    
+                    // Store form data for submission
+                    window.currentForm = { id: formId, ...formData };
+                } else {
+                    document.getElementById('surveyTitle').textContent = 'Survey not found';
+                    document.getElementById('surveyQuestions').innerHTML = '<p>This survey link is invalid or expired.</p>';
+                }
+            });
+        }
+
+        function submitSurvey() {
+            const formData = new FormData(document.getElementById('surveyForm'));
+            const answers = [];
+            
+            // Get all answers
+            for (let [key, value] of formData.entries()) {
+                if (value.trim()) {
+                    answers.push(value.trim());
+                }
+            }
+            
+            if (answers.length === 0) {
+                showNotification('Please answer at least one question', 'error');
+                return;
+            }
+            
+            const response = {
+                id: Date.now().toString(),
+                formId: window.currentForm.id,
+                formName: window.currentForm.name,
+                answers: answers,
+                timestamp: new Date()
+            };
+            
+            // Save response to Firebase
+            db.collection('feedbackResponses').doc(response.id).set(response)
+                .then(() => {
+                    document.getElementById('surveyForm').style.display = 'none';
+                    document.getElementById('thankYou').style.display = 'block';
+                });
         }
     </script>
 </body>
