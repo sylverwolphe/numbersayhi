@@ -3,950 +3,374 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>numbersayhi.fyi - Modern Stats Tracking</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <title>Number Say Hi</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-
-        :root {
-            --primary: #4361ee;
-            --primary-light: #4895ef;
-            --secondary: #3a0ca3;
-            --accent: #f72585;
-            --success: #4cc9f0;
-            --warning: #f9c74f;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --light-gray: #e9ecef;
-            --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-light));
-        }
-
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
         body {
-            background-color: #f9fafb;
-            color: var(--dark);
-            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #fafafa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.4;
         }
 
         .container {
-            width: 100%;
-            max-width: 1400px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 0 20px;
         }
 
-        /* Header Styles */
-        header {
-            background: white;
-            color: var(--dark);
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--light-gray);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
 
-        .logo i {
-            margin-right: 10px;
-            color: var(--primary);
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .tagline {
+            color: #666;
+            font-size: 14px;
         }
 
-        .nav-links {
-            display: flex;
-            list-style: none;
-            align-items: center;
-            gap: 1.5rem;
+        .nav {
+            text-align: center;
+            margin: 30px 0;
         }
 
-        .nav-links a {
-            color: var(--dark);
-            text-decoration: none;
+        .nav-btn {
+            padding: 8px 16px;
+            background: white;
+            color: #333;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            margin: 0 4px;
+        }
+
+        .nav-btn.active {
+            background: #333;
+            color: white;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            margin: 0 0 16px 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 4px;
             font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
+            font-size: 14px;
         }
 
-        .nav-links a:not(.btn):after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--gradient-primary);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:not(.btn):hover:after {
+        input, textarea, select {
             width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #333;
         }
 
         .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.6rem 1.5rem;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            font-size: 0.95rem;
-        }
-
-        .btn-primary {
-            background: var(--gradient-primary);
+            background: #333;
             color: white;
-            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+            padding: 8px 16px;
+            border: none;
+            cursor: pointer;
+            margin: 4px 4px 4px 0;
+            font-size: 14px;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.4);
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
         }
 
-        .btn-outline {
-            background-color: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
+        .stat-card {
+            background: #f5f5f5;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid #ddd;
         }
 
-        .btn-outline:hover {
-            background-color: var(--primary);
+        .stat-number {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .menu-item {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid #ddd;
+        }
+
+        .qr-container {
+            text-align: center;
+            padding: 20px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+        }
+
+        .qr-code {
+            max-width: 150px;
+            margin: 12px auto;
+        }
+
+        .feedback-item {
+            background: #f9f9f9;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-left: 3px solid #333;
+            font-size: 14px;
+        }
+
+        .rating-buttons {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0;
+            flex-wrap: wrap;
+        }
+
+        .rating-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .rating-btn.selected {
+            background: #333;
             color: white;
         }
 
-        .btn-gray {
-            background-color: var(--light-gray);
-            color: var(--dark);
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #eee;
+            margin: 8px 0;
         }
 
-        .btn-gray:hover {
-            background-color: #dcdcdc;
-        }
-
-        .btn-sm {
-            padding: 0.4rem 1rem;
-            font-size: 0.85rem;
-        }
-
-        .btn-icon {
-            background: none;
-            border: none;
-            color: var(--gray);
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-icon:hover {
-            color: var(--primary);
-            background: var(--light);
-        }
-
-        /* Dashboard Styles */
-        .dashboard {
-            padding: 2rem 0;
-        }
-
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .project-section {
-            margin-bottom: 3rem;
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .project-section:hover {
-            transform: translateY(-5px);
-        }
-
-        .project-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--light-gray);
-        }
-
-        .studies-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .study-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .study-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .study-card:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
+        .progress-fill {
             height: 100%;
-            background: var(--gradient-primary);
+            background: #333;
         }
 
-        .study-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
-
-        .study-type {
-            font-size: 0.8rem;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            background: var(--light-gray);
-            font-weight: 500;
-        }
-
-        .study-metrics {
-            display: flex;
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-
-        .metric {
-            text-align: center;
-            flex: 1;
-            padding: 0.5rem;
-            background: var(--light);
-            border-radius: 8px;
-        }
-
-        .metric-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .metric-label {
-            font-size: 0.75rem;
-            color: var(--gray);
-            font-weight: 500;
-        }
-
-        .study-actions {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 1.5rem;
-        }
-
-        .add-study-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 2rem;
-            border: 2px dashed var(--light-gray);
-            border-radius: 12px;
-            background: transparent;
-            color: var(--gray);
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .add-study-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: rgba(67, 97, 238, 0.05);
-        }
-
-        .add-study-btn i {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Context Menu Styles */
-        .context-menu {
-            display: none;
-            position: absolute;
-            right: 10px;
-            top: 40px;
-            background: white;
-            border: 1px solid var(--light-gray);
-            border-radius: 8px;
-            box-shadow: var(--card-shadow);
-            z-index: 10;
-            min-width: 150px;
-        }
-
-        .context-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            width: 100%;
-            padding: 0.75rem;
-            border: none;
-            background: none;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-size: 0.9rem;
-            color: var(--dark);
-            text-align: left;
-        }
-
-        .context-item:hover {
-            background: var(--light);
-        }
-
-        .context-item.text-danger {
-            color: #dc3545;
-        }
-
-        .context-item.text-danger:hover {
-            background: #f8d7da;
-        }
-
-        /* Slide Panel Styles */
-        .slide-panel {
+        .notification {
             position: fixed;
-            top: 0;
-            right: -400px;
-            width: 400px;
-            height: 100vh;
-            background: white;
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-            transition: right 0.3s ease;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 16px;
+            font-size: 14px;
             z-index: 1000;
-            overflow-y: auto;
-        }
-
-        .slide-panel.open {
-            right: 0;
-        }
-
-        .panel-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--light-gray);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .panel-content {
-            padding: 1.5rem;
-        }
-
-        .panel-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            z-index: 999;
-        }
-
-        .panel-overlay.open {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 2.5rem;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 700px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-            animation: modalFadeIn 0.3s ease;
-        }
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--light-gray);
-        }
-
-        .close {
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--gray);
-            transition: color 0.3s ease;
-        }
-
-        .close:hover {
-            color: var(--dark);
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 1px solid var(--light-gray);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
-        }
-
-        .study-type-options {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
-
-        .study-type-option {
-            border: 2px solid var(--light-gray);
-            border-radius: 12px;
-            padding: 1.5rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .study-type-option:hover {
-            border-color: var(--primary);
-            transform: translateY(-3px);
-        }
-
-        .study-type-option.selected {
-            border-color: var(--primary);
-            background-color: rgba(67, 97, 238, 0.05);
-        }
-
-        .study-type-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            color: var(--primary);
-        }
-
-        /* Toggle Switch */
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 26px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: var(--success);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(24px);
-        }
-
-        .toggle-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 0.5rem;
-        }
-
-        /* QR Code Modal */
-        .qrcode-container {
-            text-align: center;
-            margin: 1.5rem 0;
-        }
-
-        #qrcode {
-            display: inline-block;
-            padding: 15px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .share-link {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            background: var(--light);
-            border-radius: 8px;
-            word-break: break-all;
-            font-size: 0.9rem;
-        }
-
-        /* Chart Container */
-        .chart-container {
-            margin: 1.5rem 0;
-            position: relative;
-            height: 300px;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: var(--gray);
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: var(--light-gray);
-        }
-
-        /* Onboarding */
-        .onboarding {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            z-index: 2000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-        }
-
-        .onboarding-content {
-            max-width: 600px;
-            text-align: center;
-        }
-
-        .onboarding-steps {
-            display: flex;
-            justify-content: center;
-            margin: 2rem 0;
-        }
-
-        .onboarding-step {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--light-gray);
-            margin: 0 5px;
-        }
-
-        .onboarding-step.active {
-            background: var(--primary);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .study-type-options {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .nav-links li:not(:last-child) {
-                display: none;
-            }
-            
-            .dashboard-header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
-            }
-            
-            .studies-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .study-type-options {
-                grid-template-columns: 1fr;
-            }
-            
-            .project-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-            
-            .study-metrics {
-                flex-wrap: wrap;
-            }
-            
-            .metric {
-                min-width: calc(50% - 0.5rem);
-            }
-        }
-
-        /* Animation Classes */
-        .fade-in {
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .slide-in {
-            animation: slideIn 0.5s ease;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        /* Pulse animation for loading */
-        .pulse {
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        /* Error Styles */
-        .error-message {
-            color: #dc3545;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-
-        /* Success Styles */
-        .success-message {
-            color: #28a745;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <nav>
-                <div class="logo">
-                    <i class="fas fa-chart-line"></i>
-                    <span>numbersayhi.fyi</span>
-                </div>
-                <ul class="nav-links">
-                    <li><a href="#" id="dashboard-link">Dashboard</a></li>
-                    <li><a href="#" id="templates-link">Templates</a></li>
-                    <li><a href="#" id="help-link">Help</a></li>
-                    <li><a href="#" id="logout-link" class="btn btn-outline">Logout</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <div class="container">
+      
 
-    <!-- Dashboard -->
-    <section class="dashboard" id="dashboard">
-        <div class="container">
-            <div class="dashboard-header">
-                <div>
-                    <h1>Your Projects</h1>
-                    <p>Track, analyze, and share your data</p>
-                </div>
-                <button class="btn btn-primary" id="create-project-btn">
-                    <i class="fas fa-plus"></i> New Project
-                </button>
-            </div>
-            
-            <!-- Project Sections -->
-            <div class="projects-container" id="projects-container">
-                <!-- Project sections will be loaded here -->
-            </div>
-        </div>
-    </section>
+        <nav class="nav">
+            <button class="nav-btn active" onclick="showSection('feedback')">Feedback Forms</button>
+            <button class="nav-btn" onclick="showSection('orders')">Menu Orders</button>
+            <button class="nav-btn" onclick="showSection('drinks')">Drink Testing</button>
+        </nav>
 
-    <!-- Create Project Modal -->
-    <div class="modal" id="create-project-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Create New Project</h3>
-                <span class="close">&times;</span>
+        <!-- Feedback Section -->
+        <section id="feedback" class="section active">
+            <div class="card">
+                <h3>Create Feedback Form</h3>
+                <div class="input-group">
+                    <label>Form Name</label>
+                    <input type="text" id="formName" placeholder="e.g., Service Quality Survey">
+                </div>
+                <div class="input-group">
+                    <label>Questions (one per line)</label>
+                    <textarea id="formQuestions" rows="4" placeholder="How was your service today?&#10;Rate our coffee quality (1-5)&#10;Any suggestions?"></textarea>
+                </div>
+                <button class="btn" onclick="createFeedbackForm()">Create Form & Generate QR Code</button>
             </div>
-            <div class="form-group">
-                <label for="project-name">Project Name</label>
-                <input type="text" id="project-name" class="form-control" placeholder="e.g., My Coffee Shop">
+
+            <div id="qrDisplay" class="card" style="display: none;">
+                <h3>Your Feedback QR Code</h3>
+                <div class="qr-container">
+                    <img id="qrCode" class="qr-code" alt="QR Code">
+                    <p>Share this QR code to collect feedback!</p>
+                    <p id="formUrl"></p>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="project-desc">Description (optional)</label>
-                <textarea id="project-desc" class="form-control" placeholder="What's this project about?"></textarea>
+
+            <div class="card">
+                <h3>Feedback Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalResponses">0</div>
+                        <div class="stat-label">Total Responses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="todayResponses">0</div>
+                        <div class="stat-label">Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgRating">0</div>
+                        <div class="stat-label">Avg Rating</div>
+                    </div>
+                </div>
+                <div class="feedback-list" id="feedbackList"></div>
             </div>
-            <div class="form-group">
-                <label>Project Category</label>
-                <select class="form-control" id="project-category">
-                    <option value="business">Business</option>
-                        <option value="product">Product Feedback</option>
-                                            <option value="research">Research</option>
-                    <option value="personal">Personal Tracking</option>
-                    <option value="other">Other</option>
-                </select>
+        </section>
+
+        <!-- Orders Section -->
+        <section id="orders" class="section">
+            <div class="card">
+                <h3>Menu Management</h3>
+                <div class="input-group">
+                    <label>New Drink Name</label>
+                    <input type="text" id="newDrinkName" placeholder="e.g., Lavender Latte">
+                </div>
+                <div class="input-group">
+                    <label>Price</label>
+                    <input type="number" id="newDrinkPrice" step="0.01" placeholder="4.50">
+                </div>
+                <button class="btn btn-success" onclick="addMenuItem()">Add to Menu</button>
             </div>
-            <button class="btn btn-primary" id="save-project-btn">Create Project</button>
-        </div>
+
+            <div class="card">
+                <h3>Current Menu</h3>
+                <div class="menu-grid" id="menuGrid"></div>
+            </div>
+
+            <div class="card">
+                <h3>Order Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalOrders">0</div>
+                        <div class="stat-label">Total Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="todayOrders">0</div>
+                        <div class="stat-label">Today's Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="dailyRevenue">$0</div>
+                        <div class="stat-label">Daily Revenue</div>
+                    </div>
+                </div>
+                <div id="topSellingDrink">
+                    <h4>Today's Top Seller: <span id="topDrinkName">-</span></h4>
+                </div>
+            </div>
+        </section>
+
+        <!-- Drink Testing Section -->
+        <section id="drinks" class="section">
+            <div class="card">
+                <h3>Test a New Drink</h3>
+                <div class="input-group">
+                    <label>Drink Name</label>
+                    <input type="text" id="testDrinkName" placeholder="e.g., Cardamom Oat Milk Cortado">
+                </div>
+                <div class="input-group">
+                    <label>Test Date</label>
+                    <input type="date" id="testDate" value="">
+                </div>
+                <div class="input-group">
+                    <label>Your Rating</label>
+                    <div class="rating-buttons">
+                        <button class="rating-btn" onclick="selectRating('love')">😍 Love It</button>
+                        <button class="rating-btn" onclick="selectRating('like')">😊 Like It</button>
+                        <button class="rating-btn" onclick="selectRating('meh')">😐 Meh</button>
+                        <button class="rating-btn" onclick="selectRating('dislike')">😕 Don't Like</button>
+                        <button class="rating-btn" onclick="selectRating('hate')">🤢 Hate It</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Notes (optional)</label>
+                    <textarea id="testNotes" rows="3" placeholder="Too sweet, needs more espresso, interesting but not for customers..."></textarea>
+                </div>
+                <button class="btn" onclick="recordDrinkTest()">Record Test</button>
+            </div>
+
+            <div class="card">
+                <h3>Testing Stats & Boldness Tracker</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalTests">0</div>
+                        <div class="stat-label">Drinks Tested</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="likePercentage">0%</div>
+                        <div class="stat-label">Like Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="boldnessScore">0%</div>
+                        <div class="stat-label">Boldness Score</div>
+                    </div>
+                </div>
+                
+                <div style="margin: 2rem 0;">
+                    <h4>Boldness Progress (Maximize Dislikes!)</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="boldnessProgress" style="width: 0%"></div>
+                    </div>
+                    <p><strong>Goal:</strong> Keep testing drinks you might not like to stay bold! 🎯</p>
+                </div>
+
+                <div id="recentTests" style="max-height: 300px; overflow-y: auto;"></div>
+            </div>
+        </section>
     </div>
 
-    <!-- Create Study Modal -->
-    <div class="modal" id="create-study-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Create New Study</h3>
-                <span class="close">&times;</span>
-            </div>
-            <div class="form-group">
-                <label for="study-name">Study Name</label>
-                <input type="text" id="study-name" class="form-control" placeholder="e.g., Customer Feedback">
-            </div>
-            
-            <h4 style="margin-bottom: 1rem;">Select Study Type</h4>
-            <div class="study-type-options">
-                <div class="study-type-option" data-type="feedback">
-                    <div class="study-type-icon">
-                        <i class="fas fa-comment-alt"></i>
-                    </div>
-                    <h4>Feedback Form</h4>
-                    <p>Collect ratings and comments</p>
-                </div>
-                <div class="study-type-option" data-type="counter">
-                    <div class="study-type-icon">
-                        <i class="fas fa-plus-circle"></i>
-                    </div>
-                    <h4>Simple Counter</h4>
-                    <p>Track quantities over time</p>
-                </div>
-                <div class="study-type-option" data-type="abtest">
-                    <div class="study-type-icon">
-                        <i class="fas fa-vial"></i>
-                    </div>
-                    <h4>A/B Test</h4>
-                    <p>Compare two options</p>
-                </div>
-                <div class="study-type-option" data-type="survey">
-                    <div class="study-type-icon">
-                        <i class="fas fa-poll"></i>
-                    </div>
-                    <h4>Multi-question Survey</h4>
-                    <p>Ask multiple questions</p>
-                </div>
-                <div class="study-type-option" data-type="poll">
-                    <div class="study-type-icon">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <h4>Quick Poll</h4>
-                    <p>Single-question instant feedback</p>
-                </div>
-                <div class="study-type-option" data-type="time">
-                    <div class="study-type-icon">
-                        <i class="fas fa-stopwatch"></i>
-                    </div>
-                    <h4>Time Tracking</h4>
-                    <p>Log activity durations</p>
-                </div>
-            </div>
-            
-            <div id="study-configuration">
-                <!-- Configuration options will be loaded here based on study type -->
-            </div>
-            
-            <div id="validation-errors" style="display: none;" class="error-message"></div>
-            
-            <button class="btn btn-primary" id="save-study-btn">Create Study</button>
-        </div>
-    </div>
-
-    <!-- View Study Modal -->
-    <div class="modal" id="view-study-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="view-study-title">Study Details</h3>
-                <span class="close">&times;</span>
-            </div>
-            <div id="study-content">
-                <!-- Study content will be loaded here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Share Study Modal -->
-    <div class="modal" id="share-study-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Share Your Study</h3>
-                <span class="close">&times;</span>
-            </div>
-            <div class="qrcode-container">
-                <div id="qrcode"></div>
-                <div class="share-link" id="share-link"></div>
-            </div>
-            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
-                <button class="btn btn-outline" id="copy-link-btn">
-                    <i class="fas fa-link"></i> Copy Link
-                </button>
-                <button class="btn btn-primary" id="download-qr-btn">
-                    <i class="fas fa-download"></i> Download QR
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide Panel for Quick Actions -->
-    <div class="slide-panel" id="slide-panel">
-        <div class="panel-header">
-            <h3 id="panel-title">Quick Actions</h3>
-            <span class="close" onclick="closeSlidePanel()">&times;</span>
-        </div>
-        <div class="panel-content" id="panel-content">
-            <!-- Dynamic content will be loaded here -->
-        </div>
-    </div>
-    <div class="panel-overlay" id="panel-overlay" onclick="closeSlidePanel()"></div>
-
-    <!-- Onboarding Modal -->
-    <div class="onboarding" id="onboarding">
-        <div class="onboarding-content">
-            <h2>Welcome to Numbersayhi!</h2>
-            <p>Let's get started with your first project</p>
-            
-            <div class="onboarding-steps">
-                <div class="onboarding-step active"></div>
-                <div class="onboarding-step"></div>
-                <div class="onboarding-step"></div>
-            </div>
-            
-            <div style="margin: 2rem 0;">
-                <img src="https://placehold.co/400x300/4361ee/ffffff?text=Create+Your+First+Project" alt="Onboarding" style="max-width: 100%; border-radius: 12px;">
-            </div>
-            
-            <p>Create projects to organize your studies and track different metrics</p>
-            
-            <button class="btn btn-primary" id="start-onboarding" style="margin-top: 2rem;">
-                Get Started
-            </button>
-        </div>
-    </div>
-
-    <!-- Firebase Configuration -->
     <script>
-        // Firebase configuration
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyA0NHovIKAxxdCJLXz5leMEgrsTeiIGs_c",
             authDomain: "numbersayhifyi.firebaseapp.com",
@@ -958,946 +382,316 @@
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
         const db = firebase.firestore();
-    </script>
 
-    <!-- App JavaScript -->
-    <script>
-        // DOM Elements
-        const dashboard = document.getElementById('dashboard');
-        const logoutLink = document.getElementById('logout-link');
-        const createProjectBtn = document.getElementById('create-project-btn');
-        const createProjectModal = document.getElementById('create-project-modal');
-        const createStudyModal = document.getElementById('create-study-modal');
-        const viewStudyModal = document.getElementById('view-study-modal');
-        const shareStudyModal = document.getElementById('share-study-modal');
-        const onboarding = document.getElementById('onboarding');
-        const slidePanel = document.getElementById('slide-panel');
-        const panelOverlay = document.getElementById('panel-overlay');
-        const closeModalBtns = document.querySelectorAll('.close');
-        const saveProjectBtn = document.getElementById('save-project-btn');
-        const saveStudyBtn = document.getElementById('save-study-btn');
-        const projectsContainer = document.getElementById('projects-container');
-        const studyTypeOptions = document.querySelectorAll('.study-type-option');
-        const startOnboarding = document.getElementById('start-onboarding');
-        const copyLinkBtn = document.getElementById('copy-link-btn');
-        const downloadQrBtn = document.getElementById('download-qr-btn');
-        
-        // State variables
-        let currentProjectId = null;
-        let selectedStudyType = null;
-        let currentStudyId = null;
-        let currentStudyUrl = null;
-        
-        // Check if user is logged in
-       auth.onAuthStateChanged(user => {
-    if (user) {
-        console.log('User signed in:', user);
-        dashboard.style.display = 'block';
-        
-        const isNewUser = localStorage.getItem('numbersayhi_onboarded') !== 'true';
-        if (isNewUser) {
-            onboarding.style.display = 'flex';
-        } else {
-            onboarding.style.display = 'none';
-        }
-        
-        loadProjects(user.uid);
-    } else {
-        // FIXED: Only redirect if not already on login page
-        if (!window.location.pathname.includes('index.html')) {
-            console.log('Redirecting to login...');
-            window.location.replace('index.html');
-        }
-    }
-});
-        
-        // Event Listeners
-        logoutLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            auth.signOut().then(() => {
-                window.location.href = 'index.html';
+        // Global state
+        let currentFormId = null;
+        let selectedRating = null;
+        let menuItems = [];
+        let drinkTests = [];
+        let feedbackResponses = [];
+        let orders = [];
+
+        // Set today's date
+        document.getElementById('testDate').valueAsDate = new Date();
+
+        // Navigation
+        function showSection(sectionName) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
             });
-        });
-        
-        createProjectBtn.addEventListener('click', () => {
-            createProjectModal.style.display = 'flex';
-        });
-        
-        closeModalBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const modal = e.target.closest('.modal');
-                if (modal) modal.style.display = 'none';
-            });
-        });
-        
-        startOnboarding.addEventListener('click', () => {
-            onboarding.style.display = 'none';
-            localStorage.setItem('numbersayhi_onboarded', 'true');
-            createProjectModal.style.display = 'flex';
-        });
-        
-        copyLinkBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(currentStudyUrl).then(() => {
-                copyLinkBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                setTimeout(() => {
-                    copyLinkBtn.innerHTML = '<i class="fas fa-link"></i> Copy Link';
-                }, 2000);
-            });
-        });
-        
-        downloadQrBtn.addEventListener('click', () => {
-            const canvas = document.querySelector('#qrcode canvas');
-            const url = canvas.toDataURL('image/png');
-            const link = document.createElement('a');
-            link.download = 'qrcode.png';
-            link.href = url;
-            link.click();
-        });
-        
-        saveProjectBtn.addEventListener('click', () => {
-            const projectName = document.getElementById('project-name').value;
-            const projectDesc = document.getElementById('project-desc').value;
-            const projectCategory = document.getElementById('project-category').value;
-            
-            if (!projectName) {
-                alert('Please enter a project name');
-                return;
-            }
-            
-            const user = auth.currentUser;
-            if (user) {
-                db.collection('projects').add({
-                    name: projectName,
-                    description: projectDesc,
-                    category: projectCategory,
-                    userId: user.uid,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                })
-                .then(() => {
-                    createProjectModal.style.display = 'none';
-                    document.getElementById('project-name').value = '';
-                    document.getElementById('project-desc').value = '';
-                    loadProjects(user.uid);
-                })
-                .catch(error => {
-                    console.error('Error adding project: ', error);
-                    alert('Error creating project: ' + error.message);
-                });
-            }
-        });
-        
-        // Event delegation for all project container clicks
-        
-        function handleProjectContainerClick(e) {
-            e.stopPropagation();
-            
-            // Add study button
-            if (e.target.matches('.add-study-btn') || e.target.closest('.add-study-btn')) {
-                const btn = e.target.matches('.add-study-btn') ? e.target : e.target.closest('.add-study-btn');
-                currentProjectId = btn.getAttribute('data-project-id');
-                resetStudyModal();
-                createStudyModal.style.display = 'flex';
-                return;
-            }
-            
-            // View study button
-            if (e.target.matches('.view-study') || e.target.closest('.view-study')) {
-                const studyCard = e.target.closest('.study-card');
-                const studyId = studyCard.getAttribute('data-study-id');
-                const projectId = studyCard.getAttribute('data-project-id');
-                viewStudyDetails(projectId, studyId);
-                return;
-            }
-            
-            // Share study button
-            if (e.target.matches('.share-study') || e.target.closest('.share-study')) {
-                const studyCard = e.target.closest('.study-card');
-                const studyId = studyCard.getAttribute('data-study-id');
-                const projectId = studyCard.getAttribute('data-project-id');
-                shareStudy(projectId, studyId);
-                return;
-            }
-            
-            // Context menu toggle
-            if (e.target.matches('.study-context-btn') || e.target.closest('.study-context-btn')) {
-                e.preventDefault();
-                const btn = e.target.matches('.study-context-btn') ? e.target : e.target.closest('.study-context-btn');
-                const menu = btn.nextElementSibling;
-                
-                // Close other menus
-                document.querySelectorAll('.context-menu').forEach(m => {
-                    if (m !== menu) m.style.display = 'none';
-                });
-                
-                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-                return;
-            }
-            
-            // Edit study name (double click)
-            if (e.target.matches('.study-title')) {
-                enableInlineEditing(e.target);
-            }
-        }
-        
-        // Close context menus when clicking outside
-        document.addEventListener('click', () => {
-            document.querySelectorAll('.context-menu').forEach(menu => {
-                menu.style.display = 'none';
-            });
-        });
-        
-        // Study type selection
-        studyTypeOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                studyTypeOptions.forEach(opt => opt.classList.remove('selected'));
-                option.classList.add('selected');
-                selectedStudyType = option.getAttribute('data-type');
-                loadStudyConfiguration(selectedStudyType);
-            });
-        });
-        
-        // Validation helper
-        function validateStudyConfig(type, config) {
-            const errors = [];
-            
-            switch(type) {
-                case 'feedback':
-                    if (!config.question || config.question.length < 5) {
-                        errors.push('Question must be at least 5 characters');
-                    }
-                    break;
-                case 'abtest':
-                    if (config.variantA === config.variantB) {
-                        errors.push('Variants must have different names');
-                    }
-                    if (!config.variantA || !config.variantB) {
-                        errors.push('Both variants must have names');
-                    }
-                    break;
-                case 'poll':
-                    if (config.options.length < 2) {
-                        errors.push('Poll must have at least 2 options');
-                    }
-                    if (config.options.some(opt => !opt.trim())) {
-                        errors.push('All options must have text');
-                    }
-                    break;
-                case 'survey':
-                    if (config.questions.length === 0) {
-                        errors.push('Survey must have at least one question');
-                    }
-                    if (config.questions.some(q => !q.text.trim())) {
-                        errors.push('All questions must have text');
-                    }
-                    break;
-            }
-            
-            return errors;
-        }
-        
-        // Save study with validation
-        saveStudyBtn.addEventListener('click', () => {
-            const studyName = document.getElementById('study-name').value;
-            
-            if (!studyName || !selectedStudyType) {
-                alert('Please provide a study name and select a type');
-                return;
-            }
-            
-            if (currentProjectId) {
-                const config = getStudyConfig(selectedStudyType);
-                const errors = validateStudyConfig(selectedStudyType, config);
-                
-                if (errors.length > 0) {
-                    const errorDiv = document.getElementById('validation-errors');
-                    errorDiv.innerHTML = errors.join('<br>');
-                    errorDiv.style.display = 'block';
-                    return;
-                }
-                
-                document.getElementById('validation-errors').style.display = 'none';
-                
-                db.collection('projects').doc(currentProjectId).collection('studies').add({
-                    name: studyName,
-                    type: selectedStudyType,
-                    config: config,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    responses: 0,
-                    data: {}
-                })
-                .then(() => {
-                    createStudyModal.style.display = 'none';
-                    resetStudyModal();
-                })
-                .catch(error => {
-                    console.error('Error adding study: ', error);
-                    alert('Error creating study: ' + error.message);
-                });
-            }
-        });
-        
-        // Reset study modal state
-        function resetStudyModal() {
-            document.getElementById('study-name').value = '';
-            selectedStudyType = null;
-            studyTypeOptions.forEach(opt => opt.classList.remove('selected'));
-            document.getElementById('study-configuration').innerHTML = '';
-            document.getElementById('validation-errors').style.display = 'none';
-        }
-        
-        // Enhanced study configuration
-        function loadStudyConfiguration(type) {
-            const configContainer = document.getElementById('study-configuration');
-            
-            switch(type) {
-                case 'feedback':
-                    configContainer.innerHTML = `
-                        <div class="form-group">
-                            <label for="feedback-question">Feedback Question *</label>
-                            <input type="text" id="feedback-question" class="form-control" value="How would you rate your experience?">
-                        </div>
-                        <div class="form-group">
-                            <label>Rating Scale</label>
-                            <select class="form-control" id="feedback-scale">
-                                <option value="5">5 points (1-5)</option>
-                                <option value="7">7 points (1-7)</option>
-                                <option value="10">10 points (1-10)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="toggle-label">
-                                <span>Enable Comments</span>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="feedback-comments" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </label>
-                        </div>
-                    `;
-                    break;
-                    
-                case 'counter':
-                    configContainer.innerHTML = `
-                        <div class="form-group">
-                            <label for="counter-name">What are you counting? *</label>
-                            <input type="text" id="counter-name" class="form-control" value="Cups of coffee">
-                        </div>
-                        <div class="form-group">
-                            <label for="counter-goal">Daily Goal (optional)</label>
-                            <input type="number" id="counter-goal" class="form-control" placeholder="e.g., 100">
-                        </div>
-                        <div class="form-group">
-                            <label class="toggle-label">
-                                <span>Enable Multiple Counters</span>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="counter-multiple">
-                                    <span class="slider"></span>
-                                </label>
-                            </label>
-                        </div>
-                    `;
-                    break;
-                    
-                case 'abtest':
-                    configContainer.innerHTML = `
-                        <div class="form-group">
-                            <label for="variant-a">Variant A Name *</label>
-                            <input type="text" id="variant-a" class="form-control" value="Option A">
-                        </div>
-                        <div class="form-group">
-                            <label for="variant-b">Variant B Name *</label>
-                            <input type="text" id="variant-b" class="form-control" value="Option B">
-                        </div>
-                        <div class="form-group">
-                            <label for="ab-metric">Success Metric</label>
-                            <select id="ab-metric" class="form-control">
-                                <option value="conversion">Conversion</option>
-                                <option value="clicks">Clicks</option>
-                                <option value="purchases">Purchases</option>
-                                <option value="engagement">Engagement</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="ab-audience">Target Audience</label>
-                            <select id="ab-audience" class="form-control">
-                                <option value="all">All Users</option>
-                                <option value="new">New Users Only</option>
-                                <option value="returning">Returning Users Only</option>
-                            </select>
-                        </div>
-                    `;
-                    break;
-                    
-                case 'survey':
-                    configContainer.innerHTML = `
-                        <div class="form-group">
-                            <label for="survey-title">Survey Title *</label>
-                            <input type="text" id="survey-title" class="form-control" value="Customer Survey">
-                        </div>
-                        <div class="form-group">
-                            <label>Questions *</label>
-                            <div id="survey-questions" style="margin-bottom: 1rem;">
-                                <div class="survey-question" style="margin-bottom: 0.5rem;">
-                                    <input type="text" class="form-control" value="How did you hear about us?" style="margin-bottom: 8px;">
-                                    <select class="form-control">
-                                        <option>Multiple Choice</option>
-                                        <option>Text Response</option>
-                                        <option>Rating Scale</option>
-                                    </select>
-                                </div>
-                                <div class="survey-question" style="margin-bottom: 0.5rem;">
-                                    <input type="text" class="form-control" value="What can we improve?">
-                                    <select class="form-control">
-                                        <option>Text Response</option>
-                                        <option>Multiple Choice</option>
-                                        <option>Rating Scale</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-outline" id="add-question-btn" style="width: 100%;">
-                                <i class="fas fa-plus"></i> Add Question
-                            </button>
-                        </div>
-                    `;
-                    
-                    document.getElementById('add-question-btn').addEventListener('click', () => {
-                        const questionsContainer = document.getElementById('survey-questions');
-                        const newQuestion = document.createElement('div');
-                        newQuestion.className = 'survey-question';
-                        newQuestion.style.marginBottom = '0.5rem';
-                        newQuestion.innerHTML = `
-                            <input type="text" class="form-control" placeholder="Enter your question" style="margin-bottom: 8px;">
-                            <select class="form-control">
-                                <option>Multiple Choice</option>
-                                <option>Text Response</option>
-                                <option>Rating Scale</option>
-                            </select>
-                        `;
-                        questionsContainer.appendChild(newQuestion);
-                    });
-                    break;
-                    
-                case 'poll':
-                    configContainer.innerHTML = `
-                        <div class="form-group">
-                            <label for="poll-question">Poll Question *</label>
-                            <input type="text" id="poll-question" class="form-control" value="Which option do you prefer?">
-                        </div>
-                        <div class="form-group">
-                            <label>Options *</label>
-                            <div id="poll-options" style="margin-bottom: 1rem;">
-                                <input type="text" class="form-control" value="Option A" style="margin-bottom: 8px;">
-                                <input type="text" class="form-control" value="Option B" style="margin-bottom: 8px;">
-                                <input type="text" class="form-control" value="Option C">
-                            </div>
-                            <button type="button" class="btn btn-outline" id="add-option-btn" style="width: 100%;">
-                                <i class="fas fa-plus"></i> Add Option
-                            </button>
-                        </div>
-                        <div class="form-group">
-                            <label class="toggle-label">
-                                <span>Allow Multiple Selections</span>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="poll-multiple">
-                                    <span class="slider"></span>
-                                </label>
-                            </label>
-                        </div>
-                    `;
-                    
-                    document.getElementById('add-option-btn').addEventListener('click', () => {
-                        const optionsContainer = document.getElementById('poll-options');
-                        const newOption = document.createElement('input');
-                        newOption.type = 'text';
-                        newOption.className = 'form-control';
-                        newOption.placeholder = 'Enter an option';
-                        newOption.style.marginBottom = '8px';
-                        optionsContainer.appendChild(newOption);
-                    });
-                    break;
-                    
-                case 'time':
-                    configContainer.innerHTML = `
-                        <div class="form-group">
-                            <label for="time-activity">Activity to Track *</label>
-                            <input type="text" id="time-activity" class="form-control" value="Time spent on task">
-                        </div>
-                        <div class="form-group">
-                            <label for="time-units">Time Units</label>
-                            <select id="time-units" class="form-control">
-                                <option value="minutes">Minutes</option>
-                                <option value="hours">Hours</option>
-                                <option value="days">Days</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="toggle-label">
-                                <span>Allow Manual Time Entry</span>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="time-manual" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </label>
-                        </div>
-                    `;
-                    break;
-            }
-        }
-        
-        // Get study configuration
-        function getStudyConfig(type) {
-            switch(type) {
-                case 'feedback':
-                    return {
-                        question: document.getElementById('feedback-question').value,
-                        scale: document.getElementById('feedback-scale').value,
-                        allowComments: document.getElementById('feedback-comments').checked
-                    };
-                case 'counter':
-                    return {
-                        counterName: document.getElementById('counter-name').value,
-                        dailyGoal: document.getElementById('counter-goal').value || null,
-                        allowMultiple: document.getElementById('counter-multiple').checked
-                    };
-                case 'abtest':
-                    return {
-                        variantA: document.getElementById('variant-a').value,
-                        variantB: document.getElementById('variant-b').value,
-                        metric: document.getElementById('ab-metric').value,
-                        audience: document.getElementById('ab-audience').value
-                    };
-                case 'survey':
-                    const questions = [];
-                    document.querySelectorAll('#survey-questions .survey-question').forEach(questionEl => {
-                        const questionText = questionEl.querySelector('input').value;
-                        const questionType = questionEl.querySelector('select').value;
-                        if (questionText.trim()) {
-                            questions.push({
-                                text: questionText.trim(),
-                                type: questionType
-                            });
-                        }
-                    });
-                    return {
-                        title: document.getElementById('survey-title').value,
-                        questions: questions
-                    };
-                case 'poll':
-                    const options = [];
-                    document.querySelectorAll('#poll-options input').forEach(optionEl => {
-                        if (optionEl.value.trim()) {
-                            options.push(optionEl.value.trim());
-                        }
-                    });
-                    return {
-                        question: document.getElementById('poll-question').value,
-                        options: options,
-                        allowMultiple: document.getElementById('poll-multiple').checked
-                    };
-                case 'time':
-                    return {
-                        activity: document.getElementById('time-activity').value,
-                        units: document.getElementById('time-units').value,
-                        allowManual: document.getElementById('time-manual').checked
-                    };
-            }
-        }
-        
-        // Load user's projects with real-time updates
-        function loadProjects(userId) {
-            projectsContainer.innerHTML = '<div class="empty-state pulse"><i class="fas fa-spinner"></i><p>Loading your projects...</p></div>';
-            
-            db.collection('projects')
-                .where('userId', '==', userId)
-                .orderBy('createdAt', 'desc')
-                .onSnapshot((querySnapshot) => {
-                    projectsContainer.innerHTML = '';
-                    
-                    if (querySnapshot.empty) {
-                        projectsContainer.innerHTML = `
-                            <div class="empty-state">
-                                <i class="fas fa-folder-plus"></i>
-                                <h3>No projects yet</h3>
-                                <p>Create your first project to start tracking stats</p>
-                                <button class="btn btn-primary" id="create-first-project">Create Project</button>
-                            </div>
-                        `;
-                        
-                        document.getElementById('create-first-project').addEventListener('click', () => {
-                            createProjectModal.style.display = 'flex';
-                        });
-                        
-                        return;
-                    }
-                    
-                    querySnapshot.forEach((doc) => {
-                        loadProjectStudies({ id: doc.id, ...doc.data() });
-                    });
-                }, (error) => {
-                    console.error('Error loading projects: ', error);
-                    projectsContainer.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Error loading projects. Please try again.</p></div>';
-                });
-        }
-        
-        // Load studies for a project with real-time updates
-        function loadProjectStudies(project) {
-            const projectSection = document.createElement('div');
-            projectSection.className = 'project-section fade-in';
-            projectSection.innerHTML = `
-                <div class="project-header">
-                    <div>
-                        <h2>${project.name}</h2>
-                        <p>${project.description || 'No description'}</p>
-                    </div>
-                    <button class="btn btn-outline add-study-to-project" data-project-id="${project.id}">
-                        <i class="fas fa-plus"></i> Add Study
-                    </button>
-                </div>
-                <div class="studies-container" id="studies-${project.id}">
-                    <div class="empty-state pulse"><i class="fas fa-spinner"></i><p>Loading studies...</p></div>
-                </div>
-            `;
-            
-            projectsContainer.appendChild(projectSection);
-            
-            db.collection('projects').doc(project.id).collection('studies')
-                .orderBy('createdAt', 'desc')
-                .onSnapshot((snapshot) => {
-                    const studies = [];
-                    snapshot.forEach((doc) => {
-                        studies.push({ id: doc.id, ...doc.data() });
-                    });
-                    
-                    const container = document.getElementById(`studies-${project.id}`);
-                    container.innerHTML = renderStudies(studies, project.id);
-                });
-        }
-        
-        // Render studies with context menu
-        function renderStudies(studies, projectId) {
-            if (studies.length === 0) {
-                return `
-                    <button class="add-study-btn" data-project-id="${projectId}">
-                        <i class="fas fa-plus"></i>
-                        <span>Create your first study</span>
-                    </button>
-                `;
-            }
-            
-            let html = '';
-            studies.forEach((study, index) => {
-                html += `
-                    <div class="study-card slide-in" data-study-id="${study.id}" data-project-id="${projectId}" style="animation-delay: ${index * 0.1}s">
-                        <div class="study-header">
-                            <div>
-                                <h3 class="study-title">${study.name}</h3>
-                                <span class="study-type">${study.type}</span>
-                            </div>
-                            <button class="btn-icon study-context-btn">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <div class="context-menu">
-                                <button class="context-item" onclick="editStudy('${projectId}', '${study.id}')">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
-                                <button class="context-item" onclick="duplicateStudy('${projectId}', '${study.id}')">
-                                    <i class="fas fa-copy"></i> Duplicate
-                                </button>
-                                <button class="context-item text-danger" onclick="deleteStudy('${projectId}', '${study.id}')">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            </div>
-                        </div>
-                        <p>${getStudyDescription(study)}</p>
-                        <div class="study-metrics">
-                            <div class="metric">
-                                <div class="metric-value">${study.responses || 0}</div>
-                                <div class="metric-label">Responses</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value">${getStudySecondaryMetric(study)}</div>
-                                <div class="metric-label">${getStudyMetricLabel(study)}</div>
-                            </div>
-                        </div>
-                        <div class="study-actions">
-                            <button class="btn btn-gray view-study">
-                                <i class="fas fa-chart-bar"></i> View Data
-                            </button>
-                            <button class="btn btn-primary share-study">
-                                <i class="fas fa-share-alt"></i> Share
-                            </button>
-                        </div>
-                    </div>
-                `;
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
             });
             
-            html += `
-                <button class="add-study-btn" data-project-id="${projectId}">
-                    <i class="fas fa-plus"></i>
-                    <span>Add Another Study</span>
-                </button>
-            `;
+            document.getElementById(sectionName).classList.add('active');
+            event.target.classList.add('active');
             
-            return html;
+            // Load data when switching sections
+            if (sectionName === 'feedback') loadFeedbackStats();
+            if (sectionName === 'orders') loadOrderStats();
+            if (sectionName === 'drinks') loadDrinkTestStats();
         }
-        
-        // Study action functions
-        function editStudy(projectId, studyId) {
-            // Open edit panel
-            openSlidePanel('Edit Study', 'Edit functionality coming soon...');
-        }
-        
-        function duplicateStudy(projectId, studyId) {
-            db.collection('projects').doc(projectId).collection('studies').doc(studyId).get()
-                .then(doc => {
-                    const study = doc.data();
-                    study.name = study.name + ' (Copy)';
-                    study.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                    return db.collection('projects').doc(projectId).collection('studies').add(study);
-                })
-                .catch(error => {
-                    alert('Error duplicating study: ' + error.message);
-                });
-        }
-        
-        function deleteStudy(projectId, studyId) {
-            if (confirm('Are you sure you want to delete this study? This action cannot be undone.')) {
-                db.collection('projects').doc(projectId).collection('studies').doc(studyId).delete()
-                    .catch(error => {
-                        alert('Error deleting study: ' + error.message);
-                    });
-            }
-        }
-        
-        // Inline editing for study names
-        function enableInlineEditing(element) {
-            const currentText = element.textContent;
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.value = currentText;
-            input.className = 'form-control';
-            input.style.fontSize = '1.2rem';
-            input.style.fontWeight = 'bold';
-            input.style.padding = '4px 8px';
-            input.style.border = '1px solid var(--primary)';
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
             
-            element.replaceWith(input);
-            input.focus();
-            input.select();
-            
-            const saveEdit = () => {
-                const studyCard = input.closest('.study-card');
-                const studyId = studyCard.getAttribute('data-study-id');
-                const projectId = studyCard.getAttribute('data-project-id');
-                const newName = input.value.trim();
-                
-                if (newName && newName !== currentText) {
-                    db.collection('projects').doc(projectId)
-                        .collection('studies').doc(studyId)
-                        .update({ name: newName })
-                        .catch(error => {
-                            alert('Error updating study name: ' + error.message);
-                        });
-                }
-                
-                const newElement = document.createElement('h3');
-                newElement.className = 'study-title';
-                newElement.textContent = newName || currentText;
-                input.replaceWith(newElement);
-            };
-            
-            input.addEventListener('blur', saveEdit);
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') saveEdit();
-                if (e.key === 'Escape') {
-                    const newElement = document.createElement('h3');
-                    newElement.className = 'study-title';
-                    newElement.textContent = currentText;
-                    input.replaceWith(newElement);
-                }
-            });
-        }
-        
-        // Slide panel functions
-        function openSlidePanel(title, content) {
-            document.getElementById('panel-title').textContent = title;
-            document.getElementById('panel-content').innerHTML = content;
-            slidePanel.classList.add('open');
-            panelOverlay.classList.add('open');
-        }
-        
-        function closeSlidePanel() {
-            slidePanel.classList.remove('open');
-            panelOverlay.classList.remove('open');
-        }
-        
-        // View study details
-        function viewStudyDetails(projectId, studyId) {
-            db.collection('projects').doc(projectId).collection('studies').doc(studyId).get()
-                .then((doc) => {
-                    if (doc.exists) {
-                        const study = doc.data();
-                        document.getElementById('view-study-title').textContent = study.name;
-                        
-                        let chartHtml = `
-                            <div>
-                                <h3>${study.name}</h3>
-                                <p>Type: ${study.type}</p>
-                                <p>Created: ${study.createdAt ? new Date(study.createdAt.seconds * 1000).toLocaleDateString() : 'Unknown'}</p>
-                                <p>Total Responses: ${study.responses || 0}</p>
-                                <div class="chart-container">
-                                    <canvas id="study-chart"></canvas>
-                                </div>
-                                <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-top: 1.5rem;">
-                                    <h4>Quick Actions</h4>
-                                    <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
-                                        <button class="btn btn-primary" onclick="viewResponses('${projectId}', '${studyId}')">
-                                            <i class="fas fa-list"></i> View Responses
-                                        </button>
-                                        <button class="btn btn-outline" onclick="shareStudy('${projectId}', '${studyId}')">
-                                            <i class="fas fa-qrcode"></i> Generate QR Code
-                                        </button>
-                                        <button class="btn btn-outline">
-                                            <i class="fas fa-download"></i> Export Data
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        
-                        document.getElementById('study-content').innerHTML = chartHtml;
-                        renderStudyChart(study);
-                        viewStudyModal.style.display = 'flex';
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error loading study:', error);
-                    alert('Error loading study details');
-                });
-        }
-        
-        // Share study
-        function shareStudy(projectId, studyId) {
-            currentStudyUrl = `${window.location.origin}/study.html?project=${projectId}&study=${studyId}`;
-            
-            document.getElementById('qrcode').innerHTML = '';
-            QRCode.toCanvas(document.getElementById('qrcode'), currentStudyUrl, {
-                width: 200,
-                margin: 1
-            });
-            
-            document.getElementById('share-link').textContent = currentStudyUrl;
-            shareStudyModal.style.display = 'flex';
-        }
-        
-        function viewResponses(projectId, studyId) {
-            alert(`Viewing responses for study ${studyId} in project ${projectId}`);
-        }
-        
-        // Close modals when clicking outside
-        window.addEventListener('click', (e) => {
-            if (e.target === createProjectModal) createProjectModal.style.display = 'none';
-            if (e.target === createStudyModal) createStudyModal.style.display = 'none';
-            if (e.target === viewStudyModal) viewStudyModal.style.display = 'none';
-            if (e.target === shareStudyModal) shareStudyModal.style.display = 'none';
-        });
-        
-        // Helper functions
-        function getStudyDescription(study) {
-            switch(study.type) {
-                case 'feedback':
-                    return `Collecting feedback: ${study.config.question}`;
-                case 'counter':
-                    return `Tracking: ${study.config.counterName}`;
-                case 'abtest':
-                    return `A/B Test: ${study.config.variantA} vs ${study.config.variantB}`;
-                case 'survey':
-                    return `Survey: ${study.config.questions?.length || 0} questions`;
-                case 'poll':
-                    return `Quick Poll: ${study.config.options?.length || 0} options`;
-                case 'time':
-                    return `Time Tracking: ${study.config.activity}`;
-                default:
-                    return 'Collecting data';
-            }
-        }
-        
-        function getStudySecondaryMetric(study) {
-            switch(study.type) {
-                case 'feedback':
-                    return '4.2/5';
-                case 'counter':
-                    return '24 today';
-                case 'abtest':
-                    return '55% A';
-                case 'survey':
-                    return '92% complete';
-                case 'poll':
-                    return '42% Option A';
-                case 'time':
-                    return '2.5h avg';
-                default:
-                    return '0';
-            }
-        }
-        
-        function getStudyMetricLabel(study) {
-            switch(study.type) {
-                case 'feedback':
-                    return 'Avg Rating';
-                case 'counter':
-                    return 'Today';
-                case 'abtest':
-                    return 'Variant A';
-                case 'survey':
-                    return 'Completion';
-                case 'poll':
-                    return 'Leading';
-                case 'time':
-                    return 'Average';
-                default:
-                    return 'Metric';
-            }
-        }
-        
-        // Render chart
-        function renderStudyChart(study) {
             setTimeout(() => {
-                const ctx = document.getElementById('study-chart');
-                if (!ctx) return;
-                
-                const chartCtx = ctx.getContext('2d');
-                
-                let chartData = {
-                    type: 'bar',
-                    data: {
-                        labels: ['Data 1', 'Data 2', 'Data 3', 'Data 4', 'Data 5'],
-                        datasets: [{
-                            label: 'Responses',
-                            data: [12, 19, 3, 5, 2],
-                            backgroundColor: 'rgba(67, 97, 238, 0.7)',
-                            borderColor: '#4361ee',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                };
-                
-                new Chart(chartCtx, chartData);
-            }, 100);
+                notification.remove();
+            }, 3000);
         }
-        projectsContainer.addEventListener('click', handleProjectContainerClick);
 
+        // Feedback Form Functions
+        function createFeedbackForm() {
+            const formName = document.getElementById('formName').value;
+            const questions = document.getElementById('formQuestions').value;
+            
+            if (!formName || !questions) {
+                showNotification('Please fill in form name and questions', 'error');
+                return;
+            }
+
+            currentFormId = Date.now().toString();
+            const formData = {
+                id: currentFormId,
+                name: formName,
+                questions: questions.split('\n'),
+                created: new Date(),
+                responses: []
+            };
+
+            // Save to Firebase
+            db.collection('feedbackForms').doc(currentFormId).set(formData)
+                .then(() => {
+                    // Generate QR Code
+                    const formUrl = `${window.location.origin}?form=${currentFormId}`;
+                    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(formUrl)}`;
+                    
+                    document.getElementById('qrCode').src = qrUrl;
+                    document.getElementById('formUrl').textContent = formUrl;
+                    document.getElementById('qrDisplay').style.display = 'block';
+                    
+                    showNotification('Feedback form created successfully! 🎉');
+                });
+        }
+
+        function loadFeedbackStats() {
+            db.collection('feedbackResponses').get().then((snapshot) => {
+                const responses = [];
+                snapshot.forEach(doc => responses.push(doc.data()));
+                
+                const today = new Date().toDateString();
+                const todayResponses = responses.filter(r => new Date(r.timestamp?.toDate?.() || r.timestamp).toDateString() === today);
+                
+                document.getElementById('totalResponses').textContent = responses.length;
+                document.getElementById('todayResponses').textContent = todayResponses.length;
+                
+                // Calculate average rating (assuming rating questions)
+                const ratings = responses.map(r => {
+                    const ratingAnswer = r.answers?.find(a => a.includes('rating') || /\d/.test(a));
+                    return ratingAnswer ? parseInt(ratingAnswer.match(/\d+/)?.[0]) : null;
+                }).filter(r => r !== null);
+                
+                const avgRating = ratings.length ? (ratings.reduce((a, b) => a + b) / ratings.length).toFixed(1) : 0;
+                document.getElementById('avgRating').textContent = avgRating;
+                
+                // Display recent feedback
+                const feedbackList = document.getElementById('feedbackList');
+                feedbackList.innerHTML = responses.slice(-5).reverse().map(r => 
+                    `<div class="feedback-item">
+                        <strong>${new Date(r.timestamp?.toDate?.() || r.timestamp).toLocaleString()}</strong>
+                        <div>${r.answers?.join('<br>') || 'No answers'}</div>
+                    </div>`
+                ).join('');
+            });
+        }
+
+        // Menu/Orders Functions
+        function addMenuItem() {
+            const name = document.getElementById('newDrinkName').value;
+            const price = parseFloat(document.getElementById('newDrinkPrice').value);
+            
+            if (!name || !price) {
+                showNotification('Please enter drink name and price', 'error');
+                return;
+            }
+
+            const menuItem = {
+                id: Date.now().toString(),
+                name: name,
+                price: price,
+                created: new Date(),
+                active: true
+            };
+
+            db.collection('menuItems').doc(menuItem.id).set(menuItem)
+                .then(() => {
+                    menuItems.push(menuItem);
+                    renderMenu();
+                    document.getElementById('newDrinkName').value = '';
+                    document.getElementById('newDrinkPrice').value = '';
+                    showNotification(`${name} added to menu! ☕`);
+                });
+        }
+
+        function renderMenu() {
+            const menuGrid = document.getElementById('menuGrid');
+            menuGrid.innerHTML = menuItems.filter(item => item.active).map(item => 
+                `<div class="menu-item" onclick="recordOrder('${item.id}')">
+                    <strong>${item.name}</strong>
+                    <div>$${item.price.toFixed(2)}</div>
+                    <small onclick="event.stopPropagation(); archiveItem('${item.id}')" style="color: rgba(255,255,255,0.7); cursor: pointer;">Archive</small>
+                </div>`
+            ).join('');
+        }
+
+        function recordOrder(itemId) {
+            const item = menuItems.find(m => m.id === itemId);
+            if (!item) return;
+
+            const order = {
+                id: Date.now().toString(),
+                itemId: itemId,
+                itemName: item.name,
+                price: item.price,
+                timestamp: new Date()
+            };
+
+            db.collection('orders').doc(order.id).set(order)
+                .then(() => {
+                    orders.push(order);
+                    loadOrderStats();
+                    showNotification(`Ordered: ${item.name} 🎯`);
+                });
+        }
+
+        function archiveItem(itemId) {
+            db.collection('menuItems').doc(itemId).update({ active: false })
+                .then(() => {
+                    const item = menuItems.find(m => m.id === itemId);
+                    if (item) item.active = false;
+                    renderMenu();
+                    showNotification('Item archived');
+                });
+        }
+
+        function loadOrderStats() {
+            // Load menu items
+            db.collection('menuItems').get().then((snapshot) => {
+                menuItems = [];
+                snapshot.forEach(doc => menuItems.push({id: doc.id, ...doc.data()}));
+                renderMenu();
+            });
+
+            // Load orders
+            db.collection('orders').get().then((snapshot) => {
+                orders = [];
+                snapshot.forEach(doc => orders.push(doc.data()));
+                
+                const today = new Date().toDateString();
+                const todayOrders = orders.filter(o => new Date(o.timestamp?.toDate?.() || o.timestamp).toDateString() === today);
+                
+                document.getElementById('totalOrders').textContent = orders.length;
+                document.getElementById('todayOrders').textContent = todayOrders.length;
+                document.getElementById('dailyRevenue').textContent = `$${todayOrders.reduce((sum, o) => sum + o.price, 0).toFixed(2)}`;
+                
+                // Find top selling drink today
+                const drinkCounts = {};
+                todayOrders.forEach(order => {
+                    drinkCounts[order.itemName] = (drinkCounts[order.itemName] || 0) + 1;
+                });
+                
+                const topDrink = Object.entries(drinkCounts).sort(([,a], [,b]) => b - a)[0];
+                document.getElementById('topDrinkName').textContent = topDrink ? `${topDrink[0]} (${topDrink[1]} orders)` : 'None yet';
+            });
+        }
+
+        // Drink Testing Functions
+        function selectRating(rating) {
+            document.querySelectorAll('.rating-btn').forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+            selectedRating = rating;
+        }
+
+        function recordDrinkTest() {
+            const drinkName = document.getElementById('testDrinkName').value;
+            const testDate = document.getElementById('testDate').value;
+            const notes = document.getElementById('testNotes').value;
+            
+            if (!drinkName || !testDate || !selectedRating) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+
+            const test = {
+                id: Date.now().toString(),
+                drinkName: drinkName,
+                date: testDate,
+                rating: selectedRating,
+                notes: notes,
+                timestamp: new Date()
+            };
+
+            db.collection('drinkTests').doc(test.id).set(test)
+                .then(() => {
+                    drinkTests.push(test);
+                    loadDrinkTestStats();
+                    
+                    // Clear form
+                    document.getElementById('testDrinkName').value = '';
+                    document.getElementById('testNotes').value = '';
+                    document.querySelectorAll('.rating-btn').forEach(btn => btn.classList.remove('selected'));
+                    selectedRating = null;
+                    
+                    showNotification(`Test recorded for ${drinkName}! 🧪`);
+                });
+        }
+
+        function loadDrinkTestStats() {
+            db.collection('drinkTests').get().then((snapshot) => {
+                drinkTests = [];
+                snapshot.forEach(doc => drinkTests.push(doc.data()));
+                
+                const totalTests = drinkTests.length;
+                const likedTests = drinkTests.filter(t => ['love', 'like'].includes(t.rating)).length;
+                const dislikedTests = drinkTests.filter(t => ['meh', 'dislike', 'hate'].includes(t.rating)).length;
+                
+                const likePercentage = totalTests ? Math.round((likedTests / totalTests) * 100) : 0;
+                const boldnessScore = totalTests ? Math.round((dislikedTests / totalTests) * 100) : 0;
+                
+                document.getElementById('totalTests').textContent = totalTests;
+                document.getElementById('likePercentage').textContent = `${likePercentage}%`;
+                document.getElementById('boldnessScore').textContent = `${boldnessScore}%`;
+                document.getElementById('boldnessProgress').style.width = `${boldnessScore}%`;
+                
+                // Display recent tests
+                const recentTests = document.getElementById('recentTests');
+                recentTests.innerHTML = `<h4>Recent Tests:</h4>` + drinkTests.slice(-10).reverse().map(test => 
+                    `<div class="feedback-item">
+                        <strong>${test.drinkName}</strong> - ${test.date}
+                        <div>Rating: ${getRatingEmoji(test.rating)} ${test.rating}</div>
+                        ${test.notes ? `<div><em>${test.notes}</em></div>` : ''}
+                    </div>`
+                ).join('');
+            });
+        }
+
+        function getRatingEmoji(rating) {
+            const emojis = {
+                'love': '😍',
+                'like': '😊',
+                'meh': '😐',
+                'dislike': '😕',
+                'hate': '🤢'
+            };
+            return emojis[rating] || '❓';
+        }
+
+        // Check for feedback form in URL
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const formId = urlParams.get('form');
+            
+            if (formId) {
+                // Show feedback submission interface
+                showFeedbackForm(formId);
+            } else {
+                // Load initial data
+                loadFeedbackStats();
+                loadOrderStats();
+                loadDrinkTestStats();
+            }
+        });
+
+        function showFeedbackForm(formId) {
+            // This would show a customer-facing feedback form
+            // For now, just redirect to admin view
+            showNotification('Feedback form loaded! (Customer interface coming soon)');
+        }
     </script>
 </body>
 </html>
