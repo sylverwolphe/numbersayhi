@@ -3,35 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Numbersayhi.fyi - Simple Stats Tracking</title>
+    <title>numbersayhi.fyi - Simple Stats Tracking</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
         
         :root {
-            --primary: #4361ee;
-            --secondary: #3a0ca3;
-            --accent: #f72585;
+            --primary: #0066FF;
+            --secondary: #003380;
+            --accent: #00C2FF;
             --light: #f8f9fa;
             --dark: #212529;
-            --success: #4cc9f0;
+            --success: #00C851;
             --gray: #6c757d;
             --light-gray: #e9ecef;
         }
         
         body {
-            background-color: #f9fafb;
+            background-color: #ffffff;
             color: var(--dark);
             line-height: 1.6;
+            padding: 0;
+            margin: 0;
         }
         
         .container {
@@ -43,10 +44,10 @@
         
         /* Header Styles */
         header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
+            background: white;
+            color: var(--dark);
             padding: 1rem 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid var(--light-gray);
         }
         
         nav {
@@ -56,7 +57,7 @@
         }
         
         .logo {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
             display: flex;
             align-items: center;
@@ -64,7 +65,7 @@
         
         .logo i {
             margin-right: 10px;
-            color: var(--accent);
+            color: var(--primary);
         }
         
         .nav-links {
@@ -74,72 +75,72 @@
         }
         
         .nav-links li {
-            margin-left: 2rem;
+            margin-left: 1.5rem;
         }
         
         .nav-links a {
-            color: white;
+            color: var(--dark);
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
         }
         
         .nav-links a:hover {
-            color: var(--accent);
+            color: var(--primary);
         }
         
         .btn {
             display: inline-block;
-            padding: 0.6rem 1.5rem;
-            border-radius: 50px;
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             border: none;
+            font-size: 0.95rem;
         }
         
         .btn-primary {
-            background-color: var(--accent);
+            background-color: var(--primary);
             color: white;
         }
         
         .btn-primary:hover {
-            background-color: #e51279;
-            transform: translateY(-2px);
+            background-color: var(--secondary);
         }
         
         .btn-outline {
             background-color: transparent;
-            color: white;
-            border: 2px solid white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
         }
         
         .btn-outline:hover {
-            background-color: white;
-            color: var(--primary);
-        }
-
-        .btn-gray {
-            background-color: var(--gray);
+            background-color: var(--primary);
             color: white;
         }
 
+        .btn-gray {
+            background-color: var(--light-gray);
+            color: var(--dark);
+        }
+
         .btn-gray:hover {
-            background-color: #5a6268;
+            background-color: #dcdcdc;
         }
         
         /* Hero Section */
         .hero {
-            padding: 5rem 0;
+            padding: 4rem 0;
             text-align: center;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%234361ee" opacity="0.1"/><path d="M0 0L100 100" stroke="%234361ee" stroke-width="1" opacity="0.2"/></svg>');
         }
         
         .hero h1 {
-            font-size: 3.5rem;
+            font-size: 2.8rem;
             margin-bottom: 1rem;
-            color: var(--secondary);
+            color: var(--dark);
+            font-weight: 800;
         }
         
         .hero p {
@@ -152,12 +153,12 @@
         /* Features Section */
         .section-title {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
         }
         
         .section-title h2 {
-            font-size: 2.5rem;
-            color: var(--secondary);
+            font-size: 2rem;
+            color: var(--dark);
             margin-bottom: 1rem;
         }
         
@@ -168,37 +169,33 @@
         }
         
         .features {
-            padding: 5rem 0;
+            padding: 4rem 0;
+            background-color: var(--light);
         }
         
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
         }
         
         .feature-card {
             background: white;
             border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-5px);
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         
         .feature-icon {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: var(--primary);
             margin-bottom: 1rem;
         }
         
         .feature-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--secondary);
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            color: var(--dark);
         }
         
         /* Dashboard Styles */
@@ -216,20 +213,16 @@
 
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
         }
 
         .project-card {
             background: white;
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .project-card:hover {
-            transform: translateY(-5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--light-gray);
         }
 
         .project-actions {
@@ -275,7 +268,7 @@
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
         }
 
         .form-group label {
@@ -286,9 +279,9 @@
 
         .form-control {
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.7rem;
             border: 1px solid var(--light-gray);
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 1rem;
         }
 
@@ -300,108 +293,32 @@
             display: none;
         }
 
-        .auth-tabs {
-            display: flex;
-            margin-bottom: 1.5rem;
-        }
-
-        .auth-tab {
-            flex: 1;
-            text-align: center;
-            padding: 1rem;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-        }
-
-        .auth-tab.active {
-            border-bottom: 2px solid var(--primary);
-            font-weight: 600;
-        }
-
         .auth-form {
-            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--light-gray);
         }
 
-        .auth-form.active {
-            display: block;
-        }
-
-        /* How It Works */
-        .how-it-works {
-            padding: 5rem 0;
-            background-color: var(--light);
-        }
-        
-        .steps {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            margin-top: 3rem;
-        }
-        
-        .step {
-            flex: 1;
-            min-width: 250px;
-            text-align: center;
-            padding: 0 1.5rem;
-            position: relative;
-        }
-        
-        .step-number {
-            width: 50px;
-            height: 50px;
-            background-color: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 0 auto 1.5rem;
-        }
-        
-        .step h3 {
-            margin-bottom: 1rem;
-            color: var(--secondary);
-        }
-        
-        /* CTA Section */
-        .cta {
-            padding: 5rem 0;
-            text-align: center;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-        
-        .cta h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .cta p {
-            max-width: 600px;
-            margin: 0 auto 2rem;
-            font-size: 1.2rem;
-        }
-        
         /* Footer */
         footer {
             background-color: var(--dark);
             color: white;
             padding: 3rem 0 2rem;
+            margin-top: 4rem;
         }
         
         .footer-content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 2rem;
             margin-bottom: 2rem;
         }
         
         .footer-column h3 {
             font-size: 1.2rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
             color: var(--accent);
         }
         
@@ -438,17 +355,9 @@
             }
             
             .hero h1 {
-                font-size: 2.5rem;
+                font-size: 2.2rem;
             }
             
-            .steps {
-                flex-direction: column;
-            }
-            
-            .step {
-                margin-bottom: 2rem;
-            }
-
             .dashboard-header {
                 flex-direction: column;
                 gap: 1rem;
@@ -459,8 +368,8 @@
         .toggle-switch {
             position: relative;
             display: inline-block;
-            width: 60px;
-            height: 30px;
+            width: 50px;
+            height: 24px;
         }
 
         .toggle-switch input {
@@ -484,10 +393,10 @@
         .slider:before {
             position: absolute;
             content: "";
-            height: 22px;
-            width: 22px;
-            left: 4px;
-            bottom: 4px;
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
@@ -498,13 +407,28 @@
         }
 
         input:checked + .slider:before {
-            transform: translateX(30px);
+            transform: translateX(26px);
         }
 
         .toggle-label {
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-message {
+            color: #ff3860;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .success-message {
+            color: var(--success);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
         }
     </style>
 </head>
@@ -531,48 +455,35 @@
     <!-- Hero Section -->
     <section class="hero" id="hero">
         <div class="container">
-            <h1>Track What Matters, Simply</h1>
-            <p>Numbersayhi.fyi helps startups and small businesses track their important metrics with easy-to-use tools and beautiful visualizations.</p>
-            <a href="#" class="btn btn-primary" id="get-started-btn">Get Started - It's Free</a>
+            <h1>Track numbers that matter</h1>
+            <p>Simple, no-fuss tracking for your startup, project, or anything else. No complexity, just numbers.</p>
+            <a href="#" class="btn btn-primary" id="get-started-btn">Start tracking now →</a>
         </div>
     </section>
 
     <!-- Auth Forms -->
     <section class="auth-forms" id="auth-forms">
         <div class="container">
-            <div class="auth-tabs">
-                <div class="auth-tab active" data-tab="login">Login</div>
-                <div class="auth-tab" data-tab="signup">Sign Up</div>
-            </div>
-            
-            <div class="auth-form active" id="login-form">
+            <div class="auth-form">
+                <h2 style="text-align: center; margin-bottom: 1.5rem;">Get started in seconds</h2>
                 <div class="form-group">
-                    <label for="login-email">Email</label>
-                    <input type="email" id="login-email" class="form-control" placeholder="Your email">
+                    <label for="auth-email">Email</label>
+                    <input type="email" id="auth-email" class="form-control" placeholder="your.email@example.com">
                 </div>
                 <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" class="form-control" placeholder="Your password">
-                </div>
-                <button class="btn btn-primary" id="login-btn">Login</button>
-                <p id="login-error" style="color: red; margin-top: 1rem; display: none;"></p>
-            </div>
-            
-            <div class="auth-form" id="signup-form">
-                <div class="form-group">
-                    <label for="signup-email">Email</label>
-                    <input type="email" id="signup-email" class="form-control" placeholder="Your email">
+                    <label for="auth-password">Password</label>
+                    <input type="password" id="auth-password" class="form-control" placeholder="Make it secure">
                 </div>
                 <div class="form-group">
-                    <label for="signup-password">Password</label>
-                    <input type="password" id="signup-password" class="form-control" placeholder="Create a password">
+                    <label for="project-name">First project name</label>
+                    <input type="text" id="project-name" class="form-control" placeholder="My Startup">
                 </div>
-                <div class="form-group">
-                    <label for="signup-name">Full Name</label>
-                    <input type="text" id="signup-name" class="form-control" placeholder="Your name">
-                </div>
-                <button class="btn btn-primary" id="signup-btn">Create Account</button>
-                <p id="signup-error" style="color: red; margin-top: 1rem; display: none;"></p>
+                <button class="btn btn-primary" id="auth-btn" style="width: 100%;">Continue</button>
+                <p style="text-align: center; margin-top: 1.5rem;">
+                    Already have an account? <a href="#" id="switch-to-login" style="color: var(--primary);">Log in instead</a>
+                </p>
+                <div class="error-message" id="auth-error"></div>
+                <div class="success-message" id="auth-success"></div>
             </div>
         </div>
     </section>
@@ -582,7 +493,7 @@
         <div class="container">
             <div class="dashboard-header">
                 <h2>Your Projects</h2>
-                <button class="btn btn-primary" id="create-project-btn">Create New Project</button>
+                <button class="btn btn-primary" id="create-project-btn">+ New Project</button>
             </div>
             
             <div class="projects-grid" id="projects-container">
@@ -595,94 +506,53 @@
     <section class="features" id="features">
         <div class="container">
             <div class="section-title">
-                <h2>Powerful Features</h2>
-                <p>Everything you need to track, analyze, and share your important metrics</p>
+                <h2>What you can do</h2>
+                <p>Simple tools for tracking what matters</p>
             </div>
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
-                    <h3>Create Account</h3>
-                    <p>Sign up in seconds with your email. No credit card required to get started with basic tracking features.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
                         <i class="fas fa-briefcase"></i>
                     </div>
-                    <h3>Manage Projects</h3>
-                    <p>Organize your tracking by projects - whether it's your company, product, or specific initiative.</p>
+                    <h3>Track projects</h3>
+                    <p>Create projects for your company, product, or anything you want to measure.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-sliders-h"></i>
                     </div>
-                    <h3>Tracking Tools</h3>
-                    <p>Create custom tracking tools for feedback, sales, user engagement, or any metric that matters to you.</p>
+                    <h3>Custom metrics</h3>
+                    <p>Track anything - feedback, sales, user engagement, or custom metrics.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-qrcode"></i>
                     </div>
-                    <h3>QR Code Forms</h3>
-                    <p>Generate QR codes for your feedback forms that customers can scan to quickly submit responses.</p>
+                    <h3>QR codes</h3>
+                    <p>Generate QR codes for feedback forms that customers can scan.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-chart-bar"></i>
                     </div>
-                    <h3>Visual Analytics</h3>
-                    <p>See your data in beautiful charts and graphs. Spot trends and make data-driven decisions.</p>
+                    <h3>Visualize data</h3>
+                    <p>See your data in simple charts. No complicated analytics.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-lock"></i>
                     </div>
-                    <h3>Privacy Controls</h3>
-                    <p>Toggle projects and individual stats between public and private with a single click.</p>
+                    <h3>Privacy controls</h3>
+                    <p>Toggle between public and private with one click.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>No complexity</h3>
+                    <p>Designed to be simple and fast. No training required.</p>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- How It Works -->
-    <section class="how-it-works" id="how-it-works">
-        <div class="container">
-            <div class="section-title">
-                <h2>How It Works</h2>
-                <p>Getting started with Numbersayhi.fyi is simple and straightforward</p>
-            </div>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Create Your Account</h3>
-                    <p>Sign up with your email and create your profile in less than a minute.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>Add Your Project</h3>
-                    <p>Create a project for your company, product, or any initiative you want to track.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>Set Up Tracking</h3>
-                    <p>Create tracking tools, feedback forms, or connect your data sources.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <h3>Analyze & Share</h3>
-                    <p>View your stats, create visualizations, and share insights with your team.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta">
-        <div class="container">
-            <h2>Ready to Start Tracking Your Numbers?</h2>
-            <p>Join thousands of startups and small businesses using Numbersayhi.fyi to make data-driven decisions</p>
-            <a href="#" class="btn btn-outline" id="cta-signup-btn">Sign Up Free</a>
         </div>
     </section>
 
@@ -691,39 +561,36 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-column">
-                    <h3>Numbersayhi.fyi</h3>
-                    <p>Simple, powerful stats tracking for startups and small businesses.</p>
+                    <h3>numbersayhi.fyi</h3>
+                    <p>Simple numbers tracking for makers and startups.</p>
                 </div>
                 <div class="footer-column">
                     <h3>Product</h3>
                     <ul>
                         <li><a href="#">Features</a></li>
+                        <li><a href="#">Examples</a></li>
                         <li><a href="#">Pricing</a></li>
-                        <li><a href="#">Use Cases</a></li>
-                        <li><a href="#">Integrations</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
                     <h3>Resources</h3>
                     <ul>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">Support</a></li>
+                        <li><a href="#">Docs</a></li>
                         <li><a href="#">API</a></li>
+                        <li><a href="#">Help</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
                     <h3>Company</h3>
                     <ul>
                         <li><a href="#">About</a></li>
-                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Blog</a></li>
                         <li><a href="#">Contact</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
                     </ul>
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2023 Numbersayhi.fyi. All rights reserved.</p>
+                <p>&copy; 2023 numbersayhi.fyi. No rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -736,18 +603,18 @@
                 <span class="close">&times;</span>
             </div>
             <div class="form-group">
-                <label for="project-name">Project Name</label>
-                <input type="text" id="project-name" class="form-control" placeholder="e.g., My Startup">
+                <label for="new-project-name">Project Name</label>
+                <input type="text" id="new-project-name" class="form-control" placeholder="e.g., My Startup">
             </div>
             <div class="form-group">
-                <label for="project-desc">Description</label>
-                <textarea id="project-desc" class="form-control" placeholder="What's this project about?"></textarea>
+                <label for="new-project-desc">Description (optional)</label>
+                <textarea id="new-project-desc" class="form-control" placeholder="What's this project about?"></textarea>
             </div>
             <div class="form-group">
                 <label class="toggle-label">
                     <span>Public Project</span>
                     <label class="toggle-switch">
-                        <input type="checkbox" id="project-public">
+                        <input type="checkbox" id="new-project-public">
                         <span class="slider"></span>
                     </label>
                 </label>
@@ -781,21 +648,22 @@
         const heroSection = document.getElementById('hero');
         const authForms = document.getElementById('auth-forms');
         const dashboard = document.getElementById('dashboard');
-        const loginForm = document.getElementById('login-form');
-        const signupForm = document.getElementById('signup-form');
         const loginLink = document.getElementById('login-link');
         const logoutLink = document.getElementById('logout-link');
         const dashboardLink = document.getElementById('dashboard-link');
         const getStartedBtn = document.getElementById('get-started-btn');
-        const ctaSignupBtn = document.getElementById('cta-signup-btn');
-        const authTabs = document.querySelectorAll('.auth-tab');
+        const authBtn = document.getElementById('auth-btn');
         const createProjectBtn = document.getElementById('create-project-btn');
         const createProjectModal = document.getElementById('create-project-modal');
         const closeModalBtns = document.querySelectorAll('.close');
         const saveProjectBtn = document.getElementById('save-project-btn');
-        const loginBtn = document.getElementById('login-btn');
-        const signupBtn = document.getElementById('signup-btn');
         const projectsContainer = document.getElementById('projects-container');
+        const authError = document.getElementById('auth-error');
+        const authSuccess = document.getElementById('auth-success');
+        const switchToLogin = document.getElementById('switch-to-login');
+        
+        // Auth state
+        let isLoginMode = false;
         
         // Auth state observer
         auth.onAuthStateChanged(user => {
@@ -824,21 +692,28 @@
         });
         
         // Event Listeners
-        getStartedBtn.addEventListener('click', () => {
-            heroSection.style.display = 'none';
-            authForms.style.display = 'block';
-        });
-        
-        ctaSignupBtn.addEventListener('click', (e) => {
+        getStartedBtn.addEventListener('click', (e) => {
             e.preventDefault();
             heroSection.style.display = 'none';
             authForms.style.display = 'block';
+            isLoginMode = false;
+            authBtn.textContent = 'Create account';
+            document.querySelector('#auth-forms h2').textContent = 'Get started in seconds';
+            document.querySelector('#auth-forms p').innerHTML = 'Already have an account? <a href="#" id="switch-to-login" style="color: var(--primary);">Log in instead</a>';
+            document.getElementById('project-name').style.display = 'block';
+            document.querySelector('label[for="project-name"]').style.display = 'block';
         });
         
         loginLink.addEventListener('click', (e) => {
             e.preventDefault();
             heroSection.style.display = 'none';
             authForms.style.display = 'block';
+            isLoginMode = true;
+            authBtn.textContent = 'Log in';
+            document.querySelector('#auth-forms h2').textContent = 'Welcome back';
+            document.querySelector('#auth-forms p').innerHTML = 'Need an account? <a href="#" id="switch-to-signup" style="color: var(--primary);">Sign up instead</a>';
+            document.getElementById('project-name').style.display = 'none';
+            document.querySelector('label[for="project-name"]').style.display = 'none';
         });
         
         logoutLink.addEventListener('click', (e) => {
@@ -846,25 +721,25 @@
             auth.signOut();
         });
         
-        authTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const tabName = tab.getAttribute('data-tab');
-                
-                // Update active tab
-                authTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                
-                // Show correct form
-                if (tabName === 'login') {
-                    loginForm.classList.add('active');
-                    signupForm.classList.remove('active');
-                } else {
-                    loginForm.classList.add('active');
-                    signupForm.classList.remove('active');
-                    signupForm.classList.add('active');
-                    loginForm.classList.remove('active');
-                }
-            });
+        // Switch between login and signup
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'switch-to-login') {
+                e.preventDefault();
+                isLoginMode = true;
+                authBtn.textContent = 'Log in';
+                document.querySelector('#auth-forms h2').textContent = 'Welcome back';
+                document.querySelector('#auth-forms p').innerHTML = 'Need an account? <a href="#" id="switch-to-signup" style="color: var(--primary);">Sign up instead</a>';
+                document.getElementById('project-name').style.display = 'none';
+                document.querySelector('label[for="project-name"]').style.display = 'none';
+            } else if (e.target.id === 'switch-to-signup') {
+                e.preventDefault();
+                isLoginMode = false;
+                authBtn.textContent = 'Create account';
+                document.querySelector('#auth-forms h2').textContent = 'Get started in seconds';
+                document.querySelector('#auth-forms p').innerHTML = 'Already have an account? <a href="#" id="switch-to-login" style="color: var(--primary);">Log in instead</a>';
+                document.getElementById('project-name').style.display = 'block';
+                document.querySelector('label[for="project-name"]').style.display = 'block';
+            }
         });
         
         createProjectBtn.addEventListener('click', () => {
@@ -878,9 +753,9 @@
         });
         
         saveProjectBtn.addEventListener('click', () => {
-            const projectName = document.getElementById('project-name').value;
-            const projectDesc = document.getElementById('project-desc').value;
-            const isPublic = document.getElementById('project-public').checked;
+            const projectName = document.getElementById('new-project-name').value;
+            const projectDesc = document.getElementById('new-project-desc').value;
+            const isPublic = document.getElementById('new-project-public').checked;
             
             if (!projectName) {
                 alert('Please enter a project name');
@@ -899,9 +774,9 @@
                 })
                 .then(() => {
                     createProjectModal.style.display = 'none';
-                    document.getElementById('project-name').value = '';
-                    document.getElementById('project-desc').value = '';
-                    document.getElementById('project-public').checked = false;
+                    document.getElementById('new-project-name').value = '';
+                    document.getElementById('new-project-desc').value = '';
+                    document.getElementById('new-project-public').checked = false;
                     
                     // Reload projects
                     loadProjects(user.uid);
@@ -913,64 +788,63 @@
             }
         });
         
-        loginBtn.addEventListener('click', () => {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
+        authBtn.addEventListener('click', () => {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const projectName = document.getElementById('project-name').value;
             
             if (!email || !password) {
-                document.getElementById('login-error').textContent = 'Please enter both email and password';
-                document.getElementById('login-error').style.display = 'block';
+                showError('Please enter both email and password');
                 return;
             }
             
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Signed in 
-                    document.getElementById('login-error').style.display = 'none';
-                })
-                .catch((error) => {
-                    document.getElementById('login-error').textContent = error.message;
-                    document.getElementById('login-error').style.display = 'block';
-                });
-        });
-        
-        signupBtn.addEventListener('click', () => {
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-            const name = document.getElementById('signup-name').value;
-            
-            if (!email || !password || !name) {
-                document.getElementById('signup-error').textContent = 'Please fill all fields';
-                document.getElementById('signup-error').style.display = 'block';
+            if (!isLoginMode && !projectName) {
+                showError('Please enter a project name');
                 return;
             }
             
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Signed up 
-                    const user = userCredential.user;
-                    
-                    // Update user profile
-                    return user.updateProfile({
-                        displayName: name
+            if (isLoginMode) {
+                // Login
+                auth.signInWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        // Signed in 
+                        hideError();
+                    })
+                    .catch((error) => {
+                        showError(error.message);
                     });
-                })
-                .then(() => {
-                    document.getElementById('signup-error').style.display = 'none';
-                })
-                .catch((error) => {
-                    document.getElementById('signup-error').textContent = error.message;
-                    document.getElementById('signup-error').style.display = 'block';
-                });
+            } else {
+                // Sign up
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        // Signed up
+                        hideError();
+                        const user = userCredential.user;
+                        
+                        // Create first project
+                        if (projectName) {
+                            db.collection('projects').add({
+                                name: projectName,
+                                description: "My first project",
+                                isPublic: false,
+                                userId: user.uid,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        showError(error.message);
+                    });
+            }
         });
         
         // Load user's projects from Firestore
         function loadProjects(userId) {
             projectsContainer.innerHTML = '<p>Loading projects...</p>';
             
+            // Fixed query - removed orderBy to avoid index requirement
             db.collection('projects')
                 .where('userId', '==', userId)
-                .orderBy('createdAt', 'desc')
                 .get()
                 .then((querySnapshot) => {
                     projectsContainer.innerHTML = '';
@@ -985,10 +859,21 @@
                         return;
                     }
                     
+                    // Convert to array and sort manually
+                    const projects = [];
                     querySnapshot.forEach((doc) => {
-                        const project = doc.data();
-                        const projectId = doc.id;
-                        
+                        projects.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    // Sort by createdAt if available
+                    projects.sort((a, b) => {
+                        if (a.createdAt && b.createdAt) {
+                            return b.createdAt.seconds - a.createdAt.seconds;
+                        }
+                        return 0;
+                    });
+                    
+                    projects.forEach((project) => {
                         const projectCard = document.createElement('div');
                         projectCard.className = 'project-card';
                         projectCard.innerHTML = `
@@ -998,7 +883,7 @@
                                 <span>${project.isPublic ? 'Public' : 'Private'}</span>
                                 <label class="toggle-switch">
                                     <input type="checkbox" ${project.isPublic ? 'checked' : ''} 
-                                        onchange="toggleProjectPrivacy('${projectId}', this.checked)">
+                                        onchange="toggleProjectPrivacy('${project.id}', this.checked)">
                                     <span class="slider"></span>
                                 </label>
                             </div>
@@ -1029,6 +914,18 @@
                 console.error('Error updating project privacy: ', error);
                 alert('Error updating project privacy');
             });
+        }
+        
+        // Show error message
+        function showError(message) {
+            authError.textContent = message;
+            authError.style.display = 'block';
+            authSuccess.style.display = 'none';
+        }
+        
+        // Hide error message
+        function hideError() {
+            authError.style.display = 'none';
         }
         
         // Close modal when clicking outside
