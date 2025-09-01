@@ -17,7 +17,7 @@
             box-sizing: border-box;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
-        
+
         :root {
             --primary: #4361ee;
             --primary-light: #4895ef;
@@ -32,22 +32,22 @@
             --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
             --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-light));
         }
-        
+
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
+
         body {
             background-color: #f9fafb;
             color: var(--dark);
             line-height: 1.6;
         }
-        
+
         .container {
             width: 100%;
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 20px;
         }
-        
+
         /* Header Styles */
         header {
             background: white;
@@ -59,20 +59,20 @@
             z-index: 100;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
-        
+
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
             display: flex;
             align-items: center;
         }
-        
+
         .logo i {
             margin-right: 10px;
             color: var(--primary);
@@ -80,14 +80,14 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        
+
         .nav-links {
             display: flex;
             list-style: none;
             align-items: center;
             gap: 1.5rem;
         }
-        
+
         .nav-links a {
             color: var(--dark);
             text-decoration: none;
@@ -95,7 +95,7 @@
             transition: all 0.3s ease;
             position: relative;
         }
-        
+
         .nav-links a:not(.btn):after {
             content: '';
             position: absolute;
@@ -106,11 +106,11 @@
             background: var(--gradient-primary);
             transition: width 0.3s ease;
         }
-        
+
         .nav-links a:not(.btn):hover:after {
             width: 100%;
         }
-        
+
         .btn {
             display: inline-flex;
             align-items: center;
@@ -124,24 +124,24 @@
             border: none;
             font-size: 0.95rem;
         }
-        
+
         .btn-primary {
             background: var(--gradient-primary);
             color: white;
             box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(67, 97, 238, 0.4);
         }
-        
+
         .btn-outline {
             background-color: transparent;
             color: var(--primary);
             border: 2px solid var(--primary);
         }
-        
+
         .btn-outline:hover {
             background-color: var(--primary);
             color: white;
@@ -155,12 +155,27 @@
         .btn-gray:hover {
             background-color: #dcdcdc;
         }
-        
+
         .btn-sm {
             padding: 0.4rem 1rem;
             font-size: 0.85rem;
         }
-        
+
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-icon:hover {
+            color: var(--primary);
+            background: var(--light);
+        }
+
         /* Dashboard Styles */
         .dashboard {
             padding: 2rem 0;
@@ -300,6 +315,95 @@
         .add-study-btn i {
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
+        }
+
+        /* Context Menu Styles */
+        .context-menu {
+            display: none;
+            position: absolute;
+            right: 10px;
+            top: 40px;
+            background: white;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            z-index: 10;
+            min-width: 150px;
+        }
+
+        .context-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.9rem;
+            color: var(--dark);
+            text-align: left;
+        }
+
+        .context-item:hover {
+            background: var(--light);
+        }
+
+        .context-item.text-danger {
+            color: #dc3545;
+        }
+
+        .context-item.text-danger:hover {
+            background: #f8d7da;
+        }
+
+        /* Slide Panel Styles */
+        .slide-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .slide-panel.open {
+            right: 0;
+        }
+
+        .panel-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-content {
+            padding: 1.5rem;
+        }
+
+        .panel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .panel-overlay.open {
+            opacity: 1;
+            visibility: visible;
         }
 
         /* Modal Styles */
@@ -617,6 +721,20 @@
             50% { opacity: 0.5; }
             100% { opacity: 1; }
         }
+
+        /* Error Styles */
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Success Styles */
+        .success-message {
+            color: #28a745;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
     </style>
 </head>
 <body>
@@ -677,8 +795,8 @@
                 <label>Project Category</label>
                 <select class="form-control" id="project-category">
                     <option value="business">Business</option>
-                    <option value="product">Product Feedback</option>
-                    <option value="research">Research</option>
+                        <option value="product">Product Feedback</option>
+                                            <option value="research">Research</option>
                     <option value="personal">Personal Tracking</option>
                     <option value="other">Other</option>
                 </select>
@@ -749,6 +867,8 @@
                 <!-- Configuration options will be loaded here based on study type -->
             </div>
             
+            <div id="validation-errors" style="display: none;" class="error-message"></div>
+            
             <button class="btn btn-primary" id="save-study-btn">Create Study</button>
         </div>
     </div>
@@ -787,6 +907,18 @@
             </div>
         </div>
     </div>
+
+    <!-- Slide Panel for Quick Actions -->
+    <div class="slide-panel" id="slide-panel">
+        <div class="panel-header">
+            <h3 id="panel-title">Quick Actions</h3>
+            <span class="close" onclick="closeSlidePanel()">&times;</span>
+        </div>
+        <div class="panel-content" id="panel-content">
+            <!-- Dynamic content will be loaded here -->
+        </div>
+    </div>
+    <div class="panel-overlay" id="panel-overlay" onclick="closeSlidePanel()"></div>
 
     <!-- Onboarding Modal -->
     <div class="onboarding" id="onboarding">
@@ -841,6 +973,8 @@
         const viewStudyModal = document.getElementById('view-study-modal');
         const shareStudyModal = document.getElementById('share-study-modal');
         const onboarding = document.getElementById('onboarding');
+        const slidePanel = document.getElementById('slide-panel');
+        const panelOverlay = document.getElementById('panel-overlay');
         const closeModalBtns = document.querySelectorAll('.close');
         const saveProjectBtn = document.getElementById('save-project-btn');
         const saveStudyBtn = document.getElementById('save-study-btn');
@@ -857,27 +991,27 @@
         let currentStudyUrl = null;
         
         // Check if user is logged in
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                // User is signed in
-                console.log('User signed in:', user);
-                dashboard.style.display = 'block';
-                
-                // Check if user is new for onboarding
-                const isNewUser = localStorage.getItem('numbersayhi_onboarded') !== 'true';
-                if (isNewUser) {
-                    onboarding.style.display = 'flex';
-                } else {
-                    onboarding.style.display = 'none';
-                }
-                
-                // Load user's projects
-                loadProjects(user.uid);
-            } else {
-                // User is signed out, redirect to login page
-                window.location.href = 'index.html';
-            }
-        });
+       auth.onAuthStateChanged(user => {
+    if (user) {
+        console.log('User signed in:', user);
+        dashboard.style.display = 'block';
+        
+        const isNewUser = localStorage.getItem('numbersayhi_onboarded') !== 'true';
+        if (isNewUser) {
+            onboarding.style.display = 'flex';
+        } else {
+            onboarding.style.display = 'none';
+        }
+        
+        loadProjects(user.uid);
+    } else {
+        // FIXED: Only redirect if not already on login page
+        if (!window.location.pathname.includes('index.html')) {
+            console.log('Redirecting to login...');
+            window.location.replace('index.html');
+        }
+    }
+});
         
         // Event Listeners
         logoutLink.addEventListener('click', (e) => {
@@ -892,11 +1026,9 @@
         });
         
         closeModalBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                createProjectModal.style.display = 'none';
-                createStudyModal.style.display = 'none';
-                viewStudyModal.style.display = 'none';
-                shareStudyModal.style.display = 'none';
+            btn.addEventListener('click', (e) => {
+                const modal = e.target.closest('.modal');
+                if (modal) modal.style.display = 'none';
             });
         });
         
@@ -908,7 +1040,6 @@
         
         copyLinkBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(currentStudyUrl).then(() => {
-                // Show success feedback
                 copyLinkBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
                 setTimeout(() => {
                     copyLinkBtn.innerHTML = '<i class="fas fa-link"></i> Copy Link';
@@ -937,7 +1068,6 @@
             
             const user = auth.currentUser;
             if (user) {
-                // Save project to Firestore
                 db.collection('projects').add({
                     name: projectName,
                     description: projectDesc,
@@ -949,8 +1079,6 @@
                     createProjectModal.style.display = 'none';
                     document.getElementById('project-name').value = '';
                     document.getElementById('project-desc').value = '';
-                    
-                    // Reload projects
                     loadProjects(user.uid);
                 })
                 .catch(error => {
@@ -960,24 +1088,166 @@
             }
         });
         
+        // Event delegation for all project container clicks
+        
+        function handleProjectContainerClick(e) {
+            e.stopPropagation();
+            
+            // Add study button
+            if (e.target.matches('.add-study-btn') || e.target.closest('.add-study-btn')) {
+                const btn = e.target.matches('.add-study-btn') ? e.target : e.target.closest('.add-study-btn');
+                currentProjectId = btn.getAttribute('data-project-id');
+                resetStudyModal();
+                createStudyModal.style.display = 'flex';
+                return;
+            }
+            
+            // View study button
+            if (e.target.matches('.view-study') || e.target.closest('.view-study')) {
+                const studyCard = e.target.closest('.study-card');
+                const studyId = studyCard.getAttribute('data-study-id');
+                const projectId = studyCard.getAttribute('data-project-id');
+                viewStudyDetails(projectId, studyId);
+                return;
+            }
+            
+            // Share study button
+            if (e.target.matches('.share-study') || e.target.closest('.share-study')) {
+                const studyCard = e.target.closest('.study-card');
+                const studyId = studyCard.getAttribute('data-study-id');
+                const projectId = studyCard.getAttribute('data-project-id');
+                shareStudy(projectId, studyId);
+                return;
+            }
+            
+            // Context menu toggle
+            if (e.target.matches('.study-context-btn') || e.target.closest('.study-context-btn')) {
+                e.preventDefault();
+                const btn = e.target.matches('.study-context-btn') ? e.target : e.target.closest('.study-context-btn');
+                const menu = btn.nextElementSibling;
+                
+                // Close other menus
+                document.querySelectorAll('.context-menu').forEach(m => {
+                    if (m !== menu) m.style.display = 'none';
+                });
+                
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                return;
+            }
+            
+            // Edit study name (double click)
+            if (e.target.matches('.study-title')) {
+                enableInlineEditing(e.target);
+            }
+        }
+        
+        // Close context menus when clicking outside
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.context-menu').forEach(menu => {
+                menu.style.display = 'none';
+            });
+        });
+        
         // Study type selection
         studyTypeOptions.forEach(option => {
             option.addEventListener('click', () => {
-                // Remove selected class from all options
                 studyTypeOptions.forEach(opt => opt.classList.remove('selected'));
-                
-                // Add selected class to clicked option
                 option.classList.add('selected');
-                
-                // Set selected study type
                 selectedStudyType = option.getAttribute('data-type');
-                
-                // Load configuration for selected study type
                 loadStudyConfiguration(selectedStudyType);
             });
         });
         
-        // Load study configuration based on type
+        // Validation helper
+        function validateStudyConfig(type, config) {
+            const errors = [];
+            
+            switch(type) {
+                case 'feedback':
+                    if (!config.question || config.question.length < 5) {
+                        errors.push('Question must be at least 5 characters');
+                    }
+                    break;
+                case 'abtest':
+                    if (config.variantA === config.variantB) {
+                        errors.push('Variants must have different names');
+                    }
+                    if (!config.variantA || !config.variantB) {
+                        errors.push('Both variants must have names');
+                    }
+                    break;
+                case 'poll':
+                    if (config.options.length < 2) {
+                        errors.push('Poll must have at least 2 options');
+                    }
+                    if (config.options.some(opt => !opt.trim())) {
+                        errors.push('All options must have text');
+                    }
+                    break;
+                case 'survey':
+                    if (config.questions.length === 0) {
+                        errors.push('Survey must have at least one question');
+                    }
+                    if (config.questions.some(q => !q.text.trim())) {
+                        errors.push('All questions must have text');
+                    }
+                    break;
+            }
+            
+            return errors;
+        }
+        
+        // Save study with validation
+        saveStudyBtn.addEventListener('click', () => {
+            const studyName = document.getElementById('study-name').value;
+            
+            if (!studyName || !selectedStudyType) {
+                alert('Please provide a study name and select a type');
+                return;
+            }
+            
+            if (currentProjectId) {
+                const config = getStudyConfig(selectedStudyType);
+                const errors = validateStudyConfig(selectedStudyType, config);
+                
+                if (errors.length > 0) {
+                    const errorDiv = document.getElementById('validation-errors');
+                    errorDiv.innerHTML = errors.join('<br>');
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+                
+                document.getElementById('validation-errors').style.display = 'none';
+                
+                db.collection('projects').doc(currentProjectId).collection('studies').add({
+                    name: studyName,
+                    type: selectedStudyType,
+                    config: config,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    responses: 0,
+                    data: {}
+                })
+                .then(() => {
+                    createStudyModal.style.display = 'none';
+                    resetStudyModal();
+                })
+                .catch(error => {
+                    console.error('Error adding study: ', error);
+                    alert('Error creating study: ' + error.message);
+                });
+            }
+        });
+        
+        // Reset study modal state
+        function resetStudyModal() {
+            document.getElementById('study-name').value = '';
+            selectedStudyType = null;
+            studyTypeOptions.forEach(opt => opt.classList.remove('selected'));
+            document.getElementById('study-configuration').innerHTML = '';
+            document.getElementById('validation-errors').style.display = 'none';
+        }
+        
+        // Enhanced study configuration
         function loadStudyConfiguration(type) {
             const configContainer = document.getElementById('study-configuration');
             
@@ -985,7 +1255,7 @@
                 case 'feedback':
                     configContainer.innerHTML = `
                         <div class="form-group">
-                            <label for="feedback-question">Feedback Question</label>
+                            <label for="feedback-question">Feedback Question *</label>
                             <input type="text" id="feedback-question" class="form-control" value="How would you rate your experience?">
                         </div>
                         <div class="form-group">
@@ -1011,7 +1281,7 @@
                 case 'counter':
                     configContainer.innerHTML = `
                         <div class="form-group">
-                            <label for="counter-name">What are you counting?</label>
+                            <label for="counter-name">What are you counting? *</label>
                             <input type="text" id="counter-name" class="form-control" value="Cups of coffee">
                         </div>
                         <div class="form-group">
@@ -1033,11 +1303,11 @@
                 case 'abtest':
                     configContainer.innerHTML = `
                         <div class="form-group">
-                            <label for="variant-a">Variant A Name</label>
+                            <label for="variant-a">Variant A Name *</label>
                             <input type="text" id="variant-a" class="form-control" value="Option A">
                         </div>
                         <div class="form-group">
-                            <label for="variant-b">Variant B Name</label>
+                            <label for="variant-b">Variant B Name *</label>
                             <input type="text" id="variant-b" class="form-control" value="Option B">
                         </div>
                         <div class="form-group">
@@ -1063,11 +1333,11 @@
                 case 'survey':
                     configContainer.innerHTML = `
                         <div class="form-group">
-                            <label for="survey-title">Survey Title</label>
+                            <label for="survey-title">Survey Title *</label>
                             <input type="text" id="survey-title" class="form-control" value="Customer Survey">
                         </div>
                         <div class="form-group">
-                            <label>Questions</label>
+                            <label>Questions *</label>
                             <div id="survey-questions" style="margin-bottom: 1rem;">
                                 <div class="survey-question" style="margin-bottom: 0.5rem;">
                                     <input type="text" class="form-control" value="How did you hear about us?" style="margin-bottom: 8px;">
@@ -1092,7 +1362,6 @@
                         </div>
                     `;
                     
-                    // Add event listener for adding questions
                     document.getElementById('add-question-btn').addEventListener('click', () => {
                         const questionsContainer = document.getElementById('survey-questions');
                         const newQuestion = document.createElement('div');
@@ -1113,11 +1382,11 @@
                 case 'poll':
                     configContainer.innerHTML = `
                         <div class="form-group">
-                            <label for="poll-question">Poll Question</label>
+                            <label for="poll-question">Poll Question *</label>
                             <input type="text" id="poll-question" class="form-control" value="Which option do you prefer?">
                         </div>
                         <div class="form-group">
-                            <label>Options</label>
+                            <label>Options *</label>
                             <div id="poll-options" style="margin-bottom: 1rem;">
                                 <input type="text" class="form-control" value="Option A" style="margin-bottom: 8px;">
                                 <input type="text" class="form-control" value="Option B" style="margin-bottom: 8px;">
@@ -1138,7 +1407,6 @@
                         </div>
                     `;
                     
-                    // Add event listener for adding options
                     document.getElementById('add-option-btn').addEventListener('click', () => {
                         const optionsContainer = document.getElementById('poll-options');
                         const newOption = document.createElement('input');
@@ -1153,7 +1421,7 @@
                 case 'time':
                     configContainer.innerHTML = `
                         <div class="form-group">
-                            <label for="time-activity">Activity to Track</label>
+                            <label for="time-activity">Activity to Track *</label>
                             <input type="text" id="time-activity" class="form-control" value="Time spent on task">
                         </div>
                         <div class="form-group">
@@ -1178,111 +1446,73 @@
             }
         }
         
-        // Save study
-        saveStudyBtn.addEventListener('click', () => {
-            const studyName = document.getElementById('study-name').value;
-            
-            if (!studyName || !selectedStudyType) {
-                alert('Please provide a study name and select a type');
-                return;
+        // Get study configuration
+        function getStudyConfig(type) {
+            switch(type) {
+                case 'feedback':
+                    return {
+                        question: document.getElementById('feedback-question').value,
+                        scale: document.getElementById('feedback-scale').value,
+                        allowComments: document.getElementById('feedback-comments').checked
+                    };
+                case 'counter':
+                    return {
+                        counterName: document.getElementById('counter-name').value,
+                        dailyGoal: document.getElementById('counter-goal').value || null,
+                        allowMultiple: document.getElementById('counter-multiple').checked
+                    };
+                case 'abtest':
+                    return {
+                        variantA: document.getElementById('variant-a').value,
+                        variantB: document.getElementById('variant-b').value,
+                        metric: document.getElementById('ab-metric').value,
+                        audience: document.getElementById('ab-audience').value
+                    };
+                case 'survey':
+                    const questions = [];
+                    document.querySelectorAll('#survey-questions .survey-question').forEach(questionEl => {
+                        const questionText = questionEl.querySelector('input').value;
+                        const questionType = questionEl.querySelector('select').value;
+                        if (questionText.trim()) {
+                            questions.push({
+                                text: questionText.trim(),
+                                type: questionType
+                            });
+                        }
+                    });
+                    return {
+                        title: document.getElementById('survey-title').value,
+                        questions: questions
+                    };
+                case 'poll':
+                    const options = [];
+                    document.querySelectorAll('#poll-options input').forEach(optionEl => {
+                        if (optionEl.value.trim()) {
+                            options.push(optionEl.value.trim());
+                        }
+                    });
+                    return {
+                        question: document.getElementById('poll-question').value,
+                        options: options,
+                        allowMultiple: document.getElementById('poll-multiple').checked
+                    };
+                case 'time':
+                    return {
+                        activity: document.getElementById('time-activity').value,
+                        units: document.getElementById('time-units').value,
+                        allowManual: document.getElementById('time-manual').checked
+                    };
             }
-            
-            if (currentProjectId) {
-                // Get configuration based on study type
-                let config = {};
-                switch(selectedStudyType) {
-                    case 'feedback':
-                        config = {
-                            question: document.getElementById('feedback-question').value,
-                            scale: document.getElementById('feedback-scale').value,
-                            allowComments: document.getElementById('feedback-comments').checked
-                        };
-                        break;
-                    case 'counter':
-                        config = {
-                            counterName: document.getElementById('counter-name').value,
-                            dailyGoal: document.getElementById('counter-goal').value || null,
-                            allowMultiple: document.getElementById('counter-multiple').checked
-                        };
-                        break;
-                    case 'abtest':
-                        config = {
-                            variantA: document.getElementById('variant-a').value,
-                            variantB: document.getElementById('variant-b').value,
-                            metric: document.getElementById('ab-metric').value,
-                            audience: document.getElementById('ab-audience').value
-                        };
-                        break;
-                    case 'survey':
-                        const questions = [];
-                        document.querySelectorAll('#survey-questions .survey-question').forEach(questionEl => {
-                            const questionText = questionEl.querySelector('input').value;
-                            const questionType = questionEl.querySelector('select').value;
-                            if (questionText.trim()) {
-                                questions.push({
-                                    text: questionText.trim(),
-                                    type: questionType
-                                });
-                            }
-                        });
-                        config = {
-                            title: document.getElementById('survey-title').value,
-                            questions: questions
-                        };
-                        break;
-                    case 'poll':
-                        const options = [];
-                        document.querySelectorAll('#poll-options input').forEach(optionEl => {
-                            if (optionEl.value.trim()) {
-                                options.push(optionEl.value.trim());
-                            }
-                        });
-                        config = {
-                            question: document.getElementById('poll-question').value,
-                            options: options,
-                            allowMultiple: document.getElementById('poll-multiple').checked
-                        };
-                        break;
-                    case 'time':
-                        config = {
-                            activity: document.getElementById('time-activity').value,
-                            units: document.getElementById('time-units').value,
-                            allowManual: document.getElementById('time-manual').checked
-                        };
-                        break;
-                }
-                
-                // Save study to Firestore
-                db.collection('projects').doc(currentProjectId).collection('studies').add({
-                    name: studyName,
-                    type: selectedStudyType,
-                    config: config,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    responses: 0,
-                    data: {}
-                })
-                .then((docRef) => {
-                    createStudyModal.style.display = 'none';
-                    document.getElementById('study-name').value = '';
-                    
-                    // Reload projects to show the new study
-                    loadProjects(auth.currentUser.uid);
-                })
-                .catch(error => {
-                    console.error('Error adding study: ', error);
-                    alert('Error creating study: ' + error.message);
-                });
-            }
-        });
+        }
         
-        // Load user's projects from Firestore
+        // Load user's projects with real-time updates
         function loadProjects(userId) {
             projectsContainer.innerHTML = '<div class="empty-state pulse"><i class="fas fa-spinner"></i><p>Loading your projects...</p></div>';
             
             db.collection('projects')
                 .where('userId', '==', userId)
-                .get()
-                .then((querySnapshot) => {
+                .orderBy('createdAt', 'desc')
+                .onSnapshot((querySnapshot) => {
                     projectsContainer.innerHTML = '';
                     
                     if (querySnapshot.empty) {
@@ -1302,90 +1532,50 @@
                         return;
                     }
                     
-                    // Convert to array and sort manually
-                    const projects = [];
                     querySnapshot.forEach((doc) => {
-                        projects.push({ id: doc.id, ...doc.data() });
+                        loadProjectStudies({ id: doc.id, ...doc.data() });
                     });
-                    
-                    // Sort by createdAt if available
-                    projects.sort((a, b) => {
-                        if (a.createdAt && b.createdAt) {
-                            return b.createdAt.seconds - a.createdAt.seconds;
-                        }
-                        return 0;
-                    });
-                    
-                    // Load studies for each project
-                    projects.forEach((project) => {
-                        loadProjectStudies(project);
-                    });
-                })
-                .catch((error) => {
+                }, (error) => {
                     console.error('Error loading projects: ', error);
                     projectsContainer.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Error loading projects. Please try again.</p></div>';
                 });
         }
         
-        // Load studies for a specific project
+        // Load studies for a project with real-time updates
         function loadProjectStudies(project) {
+            const projectSection = document.createElement('div');
+            projectSection.className = 'project-section fade-in';
+            projectSection.innerHTML = `
+                <div class="project-header">
+                    <div>
+                        <h2>${project.name}</h2>
+                        <p>${project.description || 'No description'}</p>
+                    </div>
+                    <button class="btn btn-outline add-study-to-project" data-project-id="${project.id}">
+                        <i class="fas fa-plus"></i> Add Study
+                    </button>
+                </div>
+                <div class="studies-container" id="studies-${project.id}">
+                    <div class="empty-state pulse"><i class="fas fa-spinner"></i><p>Loading studies...</p></div>
+                </div>
+            `;
+            
+            projectsContainer.appendChild(projectSection);
+            
             db.collection('projects').doc(project.id).collection('studies')
-                .get()
-                .then((querySnapshot) => {
+                .orderBy('createdAt', 'desc')
+                .onSnapshot((snapshot) => {
                     const studies = [];
-                    querySnapshot.forEach((doc) => {
+                    snapshot.forEach((doc) => {
                         studies.push({ id: doc.id, ...doc.data() });
                     });
                     
-                    // Sort studies by creation date
-                    studies.sort((a, b) => {
-                        if (a.createdAt && b.createdAt) {
-                            return b.createdAt.seconds - a.createdAt.seconds;
-                        }
-                        return 0;
-                    });
-                    
-                    // Create project section
-                    const projectSection = document.createElement('div');
-                    projectSection.className = 'project-section fade-in';
-                    projectSection.innerHTML = `
-                        <div class="project-header">
-                            <div>
-                                <h2>${project.name}</h2>
-                                <p>${project.description || 'No description'}</p>
-                            </div>
-                            <button class="btn btn-outline add-study-to-project" data-project-id="${project.id}">
-                                <i class="fas fa-plus"></i> Add Study
-                            </button>
-                        </div>
-                        <div class="studies-container" id="studies-${project.id}">
-                            ${renderStudies(studies, project.id)}
-                        </div>
-                    `;
-                    
-                    projectsContainer.appendChild(projectSection);
-                    
-                    // Add event listener to the add study button
-                    projectSection.querySelector('.add-study-to-project').addEventListener('click', (e) => {
-                        currentProjectId = e.target.getAttribute('data-project-id');
-                        document.getElementById('study-name').value = '';
-                        selectedStudyType = null;
-                        document.querySelectorAll('.study-type-option').forEach(opt => {
-                            opt.classList.remove('selected');
-                        });
-                        document.getElementById('study-configuration').innerHTML = '';
-                        createStudyModal.style.display = 'flex';
-                    });
-                    
-                    // Add event listeners to study cards
-                    addStudyCardEventListeners(project.id);
-                })
-                .catch((error) => {
-                    console.error('Error loading studies: ', error);
+                    const container = document.getElementById(`studies-${project.id}`);
+                    container.innerHTML = renderStudies(studies, project.id);
                 });
         }
         
-        // Render studies for a project
+        // Render studies with context menu
         function renderStudies(studies, projectId) {
             if (studies.length === 0) {
                 return `
@@ -1397,21 +1587,33 @@
             }
             
             let html = '';
-            
-            studies.forEach(study => {
-                // Use actual data from Firestore
-                const totalResponses = study.responses || 0;
-                
+            studies.forEach((study, index) => {
                 html += `
-                    <div class="study-card slide-in" data-study-id="${study.id}" data-project-id="${projectId}">
+                    <div class="study-card slide-in" data-study-id="${study.id}" data-project-id="${projectId}" style="animation-delay: ${index * 0.1}s">
                         <div class="study-header">
-                            <h3>${study.name}</h3>
-                            <span class="study-type">${study.type}</span>
+                            <div>
+                                <h3 class="study-title">${study.name}</h3>
+                                <span class="study-type">${study.type}</span>
+                            </div>
+                            <button class="btn-icon study-context-btn">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="context-menu">
+                                <button class="context-item" onclick="editStudy('${projectId}', '${study.id}')">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="context-item" onclick="duplicateStudy('${projectId}', '${study.id}')">
+                                    <i class="fas fa-copy"></i> Duplicate
+                                </button>
+                                <button class="context-item text-danger" onclick="deleteStudy('${projectId}', '${study.id}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
                         </div>
                         <p>${getStudyDescription(study)}</p>
                         <div class="study-metrics">
                             <div class="metric">
-                                <div class="metric-value">${totalResponses}</div>
+                                <div class="metric-value">${study.responses || 0}</div>
                                 <div class="metric-label">Responses</div>
                             </div>
                             <div class="metric">
@@ -1431,7 +1633,6 @@
                 `;
             });
             
-            // Add the "add study" button at the end
             html += `
                 <button class="add-study-btn" data-project-id="${projectId}">
                     <i class="fas fa-plus"></i>
@@ -1442,7 +1643,168 @@
             return html;
         }
         
-        // Helper functions for study display
+        // Study action functions
+        function editStudy(projectId, studyId) {
+            // Open edit panel
+            openSlidePanel('Edit Study', 'Edit functionality coming soon...');
+        }
+        
+        function duplicateStudy(projectId, studyId) {
+            db.collection('projects').doc(projectId).collection('studies').doc(studyId).get()
+                .then(doc => {
+                    const study = doc.data();
+                    study.name = study.name + ' (Copy)';
+                    study.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    return db.collection('projects').doc(projectId).collection('studies').add(study);
+                })
+                .catch(error => {
+                    alert('Error duplicating study: ' + error.message);
+                });
+        }
+        
+        function deleteStudy(projectId, studyId) {
+            if (confirm('Are you sure you want to delete this study? This action cannot be undone.')) {
+                db.collection('projects').doc(projectId).collection('studies').doc(studyId).delete()
+                    .catch(error => {
+                        alert('Error deleting study: ' + error.message);
+                    });
+            }
+        }
+        
+        // Inline editing for study names
+        function enableInlineEditing(element) {
+            const currentText = element.textContent;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentText;
+            input.className = 'form-control';
+            input.style.fontSize = '1.2rem';
+            input.style.fontWeight = 'bold';
+            input.style.padding = '4px 8px';
+            input.style.border = '1px solid var(--primary)';
+            
+            element.replaceWith(input);
+            input.focus();
+            input.select();
+            
+            const saveEdit = () => {
+                const studyCard = input.closest('.study-card');
+                const studyId = studyCard.getAttribute('data-study-id');
+                const projectId = studyCard.getAttribute('data-project-id');
+                const newName = input.value.trim();
+                
+                if (newName && newName !== currentText) {
+                    db.collection('projects').doc(projectId)
+                        .collection('studies').doc(studyId)
+                        .update({ name: newName })
+                        .catch(error => {
+                            alert('Error updating study name: ' + error.message);
+                        });
+                }
+                
+                const newElement = document.createElement('h3');
+                newElement.className = 'study-title';
+                newElement.textContent = newName || currentText;
+                input.replaceWith(newElement);
+            };
+            
+            input.addEventListener('blur', saveEdit);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') saveEdit();
+                if (e.key === 'Escape') {
+                    const newElement = document.createElement('h3');
+                    newElement.className = 'study-title';
+                    newElement.textContent = currentText;
+                    input.replaceWith(newElement);
+                }
+            });
+        }
+        
+        // Slide panel functions
+        function openSlidePanel(title, content) {
+            document.getElementById('panel-title').textContent = title;
+            document.getElementById('panel-content').innerHTML = content;
+            slidePanel.classList.add('open');
+            panelOverlay.classList.add('open');
+        }
+        
+        function closeSlidePanel() {
+            slidePanel.classList.remove('open');
+            panelOverlay.classList.remove('open');
+        }
+        
+        // View study details
+        function viewStudyDetails(projectId, studyId) {
+            db.collection('projects').doc(projectId).collection('studies').doc(studyId).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const study = doc.data();
+                        document.getElementById('view-study-title').textContent = study.name;
+                        
+                        let chartHtml = `
+                            <div>
+                                <h3>${study.name}</h3>
+                                <p>Type: ${study.type}</p>
+                                <p>Created: ${study.createdAt ? new Date(study.createdAt.seconds * 1000).toLocaleDateString() : 'Unknown'}</p>
+                                <p>Total Responses: ${study.responses || 0}</p>
+                                <div class="chart-container">
+                                    <canvas id="study-chart"></canvas>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-top: 1.5rem;">
+                                    <h4>Quick Actions</h4>
+                                    <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+                                        <button class="btn btn-primary" onclick="viewResponses('${projectId}', '${studyId}')">
+                                            <i class="fas fa-list"></i> View Responses
+                                        </button>
+                                        <button class="btn btn-outline" onclick="shareStudy('${projectId}', '${studyId}')">
+                                            <i class="fas fa-qrcode"></i> Generate QR Code
+                                        </button>
+                                        <button class="btn btn-outline">
+                                            <i class="fas fa-download"></i> Export Data
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        document.getElementById('study-content').innerHTML = chartHtml;
+                        renderStudyChart(study);
+                        viewStudyModal.style.display = 'flex';
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error loading study:', error);
+                    alert('Error loading study details');
+                });
+        }
+        
+        // Share study
+        function shareStudy(projectId, studyId) {
+            currentStudyUrl = `${window.location.origin}/study.html?project=${projectId}&study=${studyId}`;
+            
+            document.getElementById('qrcode').innerHTML = '';
+            QRCode.toCanvas(document.getElementById('qrcode'), currentStudyUrl, {
+                width: 200,
+                margin: 1
+            });
+            
+            document.getElementById('share-link').textContent = currentStudyUrl;
+            shareStudyModal.style.display = 'flex';
+        }
+        
+        function viewResponses(projectId, studyId) {
+            alert(`Viewing responses for study ${studyId} in project ${projectId}`);
+        }
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === createProjectModal) createProjectModal.style.display = 'none';
+            if (e.target === createStudyModal) createStudyModal.style.display = 'none';
+            if (e.target === viewStudyModal) viewStudyModal.style.display = 'none';
+            if (e.target === shareStudyModal) shareStudyModal.style.display = 'none';
+        });
+        
+        // Helper functions
         function getStudyDescription(study) {
             switch(study.type) {
                 case 'feedback':
@@ -1452,9 +1814,9 @@
                 case 'abtest':
                     return `A/B Test: ${study.config.variantA} vs ${study.config.variantB}`;
                 case 'survey':
-                    return `Survey: ${study.config.questions.length} questions`;
+                    return `Survey: ${study.config.questions?.length || 0} questions`;
                 case 'poll':
-                    return `Quick Poll: ${study.config.options.length} options`;
+                    return `Quick Poll: ${study.config.options?.length || 0} options`;
                 case 'time':
                     return `Time Tracking: ${study.config.activity}`;
                 default:
@@ -1463,7 +1825,6 @@
         }
         
         function getStudySecondaryMetric(study) {
-            // For now, return a placeholder - in a real app, you'd calculate this from actual data
             switch(study.type) {
                 case 'feedback':
                     return '4.2/5';
@@ -1501,257 +1862,42 @@
             }
         }
         
-        // Add event listeners to study cards
-        function addStudyCardEventListeners(projectId) {
-            // Add study button
-            document.querySelectorAll(`.add-study-btn[data-project-id="${projectId}"]`).forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    currentProjectId = e.target.getAttribute('data-project-id');
-                    document.getElementById('study-name').value = '';
-                    selectedStudyType = null;
-                    document.querySelectorAll('.study-type-option').forEach(opt => {
-                        opt.classList.remove('selected');
-                    });
-                    document.getElementById('study-configuration').innerHTML = '';
-                    createStudyModal.style.display = 'flex';
-                });
-            });
-            
-            // View study button
-            document.querySelectorAll(`.view-study`).forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const studyCard = e.target.closest('.study-card');
-                    const studyId = studyCard.getAttribute('data-study-id');
-                    const projectId = studyCard.getAttribute('data-project-id');
-                    
-                    // Load study details
-                    db.collection('projects').doc(projectId).collection('studies').doc(studyId).get()
-                        .then((doc) => {
-                            if (doc.exists) {
-                                const study = doc.data();
-                                document.getElementById('view-study-title').textContent = study.name;
-                                
-                                // Create chart content based on study type
-                                let chartHtml = `
-                                    <div>
-                                        <h3>${study.name}</h3>
-                                        <p>Type: ${study.type}</p>
-                                        <p>Created: ${new Date(study.createdAt.seconds * 1000).toLocaleDateString()}</p>
-                                        <p>Total Responses: ${study.responses || 0}</p>
-                                        <div class="chart-container">
-                                            <canvas id="study-chart"></canvas>
-                                        </div>
-                                        <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-top: 1.5rem;">
-                                            <h4>Quick Actions</h4>
-                                            <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
-                                                <button class="btn btn-primary" onclick="viewResponses('${projectId}', '${studyId}')">
-                                                    <i class="fas fa-list"></i> View Responses
-                                                </button>
-                                                <button class="btn btn-outline" onclick="shareStudy('${projectId}', '${studyId}')">
-                                                    <i class="fas fa-qrcode"></i> Generate QR Code
-                                                </button>
-                                                <button class="btn btn-outline">
-                                                    <i class="fas fa-download"></i> Export Data
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `;
-                                
-                                document.getElementById('study-content').innerHTML = chartHtml;
-                                
-                                // Render chart
-                                renderStudyChart(study);
-                                
-                                viewStudyModal.style.display = 'flex';
-                            }
-                        })
-                        .catch((error) => {
-                            console.error('Error loading study:', error);
-                            alert('Error loading study details');
-                        });
-                });
-            });
-            
-            // Share study button
-            document.querySelectorAll(`.share-study`).forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const studyCard = e.target.closest('.study-card');
-                    const studyId = studyCard.getAttribute('data-study-id');
-                    const projectId = studyCard.getAttribute('data-project-id');
-                    
-                    shareStudy(projectId, studyId);
-                });
-            });
-        }
-        
-        // Render chart for study data
+        // Render chart
         function renderStudyChart(study) {
-            const ctx = document.getElementById('study-chart').getContext('2d');
-            
-            // Sample data based on study type
-            let chartData = {};
-            
-            switch(study.type) {
-                case 'feedback':
-                    chartData = {
-                        type: 'bar',
-                        data: {
-                            labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
-                            datasets: [{
-                                label: 'Responses',
-                                data: [5, 10, 15, 30, 40],
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 0.7)',
-                                    'rgba(255, 159, 64, 0.7)',
-                                    'rgba(255, 205, 86, 0.7)',
-                                    'rgba(75, 192, 192, 0.7)',
-                                    'rgba(54, 162, 235, 0.7)'
-                                ],
-                                borderColor: [
-                                    'rgb(255, 99, 132)',
-                                    'rgb(255, 159, 64)',
-                                    'rgb(255, 205, 86)',
-                                    'rgb(75, 192, 192)',
-                                    'rgb(54, 162, 235)'
-                                ],
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
+            setTimeout(() => {
+                const ctx = document.getElementById('study-chart');
+                if (!ctx) return;
+                
+                const chartCtx = ctx.getContext('2d');
+                
+                let chartData = {
+                    type: 'bar',
+                    data: {
+                        labels: ['Data 1', 'Data 2', 'Data 3', 'Data 4', 'Data 5'],
+                        datasets: [{
+                            label: 'Responses',
+                            data: [12, 19, 3, 5, 2],
+                            backgroundColor: 'rgba(67, 97, 238, 0.7)',
+                            borderColor: '#4361ee',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
                             }
                         }
-                    };
-                    break;
-                    
-                case 'counter':
-                    chartData = {
-                        type: 'line',
-                        data: {
-                            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                            datasets: [{
-                                label: 'Daily Count',
-                                data: [12, 19, 15, 17, 22, 18, 14],
-                                fill: false,
-                                borderColor: 'rgb(75, 192, 192)',
-                                tension: 0.1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
-                            }
-                        }
-                    };
-                    break;
-                    
-                case 'abtest':
-                    chartData = {
-                        type: 'doughnut',
-                        data: {
-                            labels: [study.config.variantA, study.config.variantB],
-                            datasets: [{
-                                label: 'Test Results',
-                                data: [55, 45],
-                                backgroundColor: [
-                                    'rgb(54, 162, 235)',
-                                    'rgb(255, 99, 132)'
-                                ],
-                                hoverOffset: 4
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false
-                        }
-                    };
-                    break;
-                    
-                default:
-                    chartData = {
-                        type: 'bar',
-                        data: {
-                            labels: ['Data 1', 'Data 2', 'Data 3', 'Data 4', 'Data 5'],
-                            datasets: [{
-                                label: 'Responses',
-                                data: [12, 19, 3, 5, 2],
-                                backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                                borderColor: 'rgb(54, 162, 235)',
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
-                            }
-                        }
-                    };
-            }
-            
-            // Create the chart
-            new Chart(ctx, chartData);
+                    }
+                };
+                
+                new Chart(chartCtx, chartData);
+            }, 100);
         }
-        
-        // Share study function
-        function shareStudy(projectId, studyId) {
-            // For a real implementation, you would have a public URL for your study
-            // For now, we'll create a mock URL
-            currentStudyUrl = `${window.location.origin}/study.html?project=${projectId}&study=${studyId}`;
-            
-            // Clear previous QR code
-            document.getElementById('qrcode').innerHTML = '';
-            
-            // Generate QR code
-            QRCode.toCanvas(document.getElementById('qrcode'), currentStudyUrl, {
-                width: 200,
-                margin: 1,
-                color: {
-                    dark: '#000000',
-                    light: '#ffffff'
-                }
-            }, function(error) {
-                if (error) console.error(error);
-            });
-            
-            document.getElementById('share-link').textContent = currentStudyUrl;
-            shareStudyModal.style.display = 'flex';
-        }
-        
-        // View responses function
-        function viewResponses(projectId, studyId) {
-            // This would show the actual responses in a modal or separate page
-            alert(`This would show responses for study ${studyId} in project ${projectId}`);
-        }
-        
-        // Close modal when clicking outside
-        window.addEventListener('click', (e) => {
-            if (e.target === createProjectModal) {
-                createProjectModal.style.display = 'none';
-            }
-            if (e.target === createStudyModal) {
-                createStudyModal.style.display = 'none';
-            }
-            if (e.target === viewStudyModal) {
-                viewStudyModal.style.display = 'none';
-            }
-            if (e.target === shareStudyModal) {
-                shareStudyModal.style.display = 'none';
-            }
-        });
+        projectsContainer.addEventListener('click', handleProjectContainerClick);
+
     </script>
 </body>
 </html>
