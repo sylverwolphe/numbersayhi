@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Numbersayhi.fyi - Simple Stats Tracking</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -66,6 +70,7 @@
         .nav-links {
             display: flex;
             list-style: none;
+            align-items: center;
         }
         
         .nav-links li {
@@ -91,12 +96,12 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            border: none;
         }
         
         .btn-primary {
             background-color: var(--accent);
             color: white;
-            border: none;
         }
         
         .btn-primary:hover {
@@ -113,6 +118,15 @@
         .btn-outline:hover {
             background-color: white;
             color: var(--primary);
+        }
+
+        .btn-gray {
+            background-color: var(--gray);
+            color: white;
+        }
+
+        .btn-gray:hover {
+            background-color: #5a6268;
         }
         
         /* Hero Section */
@@ -187,6 +201,131 @@
             color: var(--secondary);
         }
         
+        /* Dashboard Styles */
+        .dashboard {
+            padding: 2rem 0;
+            display: none;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .project-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .close {
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        /* Auth Forms */
+        .auth-forms {
+            padding: 2rem 0;
+            max-width: 400px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .auth-tab.active {
+            border-bottom: 2px solid var(--primary);
+            font-weight: 600;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
         /* How It Works */
         .how-it-works {
             padding: 5rem 0;
@@ -309,6 +448,63 @@
             .step {
                 margin-bottom: 2rem;
             }
+
+            .dashboard-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--success);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
     </style>
 </head>
@@ -324,19 +520,74 @@
                 <ul class="nav-links">
                     <li><a href="#features">Features</a></li>
                     <li><a href="#how-it-works">How It Works</a></li>
-                    <li><a href="#pricing">Pricing</a></li>
-                    <li><a href="#" class="btn btn-outline">Login</a></li>
+                    <li><a href="#" id="dashboard-link" style="display: none;">Dashboard</a></li>
+                    <li><a href="#" id="login-link" class="btn btn-outline">Login</a></li>
+                    <li><a href="#" id="logout-link" style="display: none;" class="btn btn-outline">Logout</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero" id="hero">
         <div class="container">
             <h1>Track What Matters, Simply</h1>
             <p>Numbersayhi.fyi helps startups and small businesses track their important metrics with easy-to-use tools and beautiful visualizations.</p>
-            <a href="#" class="btn btn-primary">Get Started - It's Free</a>
+            <a href="#" class="btn btn-primary" id="get-started-btn">Get Started - It's Free</a>
+        </div>
+    </section>
+
+    <!-- Auth Forms -->
+    <section class="auth-forms" id="auth-forms">
+        <div class="container">
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="login">Login</div>
+                <div class="auth-tab" data-tab="signup">Sign Up</div>
+            </div>
+            
+            <div class="auth-form active" id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" class="form-control" placeholder="Your email">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="Your password">
+                </div>
+                <button class="btn btn-primary" id="login-btn">Login</button>
+                <p id="login-error" style="color: red; margin-top: 1rem; display: none;"></p>
+            </div>
+            
+            <div class="auth-form" id="signup-form">
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" class="form-control" placeholder="Your email">
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" class="form-control" placeholder="Create a password">
+                </div>
+                <div class="form-group">
+                    <label for="signup-name">Full Name</label>
+                    <input type="text" id="signup-name" class="form-control" placeholder="Your name">
+                </div>
+                <button class="btn btn-primary" id="signup-btn">Create Account</button>
+                <p id="signup-error" style="color: red; margin-top: 1rem; display: none;"></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard -->
+    <section class="dashboard" id="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <h2>Your Projects</h2>
+                <button class="btn btn-primary" id="create-project-btn">Create New Project</button>
+            </div>
+            
+            <div class="projects-grid" id="projects-container">
+                <!-- Projects will be loaded here -->
+            </div>
         </div>
     </section>
 
@@ -431,7 +682,7 @@
         <div class="container">
             <h2>Ready to Start Tracking Your Numbers?</h2>
             <p>Join thousands of startups and small businesses using Numbersayhi.fyi to make data-driven decisions</p>
-            <a href="#" class="btn btn-outline">Sign Up Free</a>
+            <a href="#" class="btn btn-outline" id="cta-signup-btn">Sign Up Free</a>
         </div>
     </section>
 
@@ -477,34 +728,314 @@
         </div>
     </footer>
 
+    <!-- Create Project Modal -->
+    <div class="modal" id="create-project-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Project</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="form-group">
+                <label for="project-name">Project Name</label>
+                <input type="text" id="project-name" class="form-control" placeholder="e.g., My Startup">
+            </div>
+            <div class="form-group">
+                <label for="project-desc">Description</label>
+                <textarea id="project-desc" class="form-control" placeholder="What's this project about?"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="toggle-label">
+                    <span>Public Project</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="project-public">
+                        <span class="slider"></span>
+                    </label>
+                </label>
+                <small>Public projects can be seen by anyone with the link</small>
+            </div>
+            <button class="btn btn-primary" id="save-project-btn">Create Project</button>
+        </div>
+    </div>
+
+    <!-- Firebase Configuration -->
     <script>
-        // Simple form interaction for demonstration
-        document.addEventListener('DOMContentLoaded', function() {
-            const signUpButtons = document.querySelectorAll('.btn-primary, .btn-outline');
-            
-            signUpButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    if (this.getAttribute('href') === '#') {
-                        e.preventDefault();
-                        alert('Sign up functionality would be implemented here! This would open a registration modal or redirect to a signup page.');
-                    }
-                });
+        // Firebase configuration - REPLACE WITH YOUR OWN CONFIG
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "your-project-id.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project-id.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+    </script>
+
+    <!-- App JavaScript -->
+    <script>
+        // DOM Elements
+        const heroSection = document.getElementById('hero');
+        const authForms = document.getElementById('auth-forms');
+        const dashboard = document.getElementById('dashboard');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const loginLink = document.getElementById('login-link');
+        const logoutLink = document.getElementById('logout-link');
+        const dashboardLink = document.getElementById('dashboard-link');
+        const getStartedBtn = document.getElementById('get-started-btn');
+        const ctaSignupBtn = document.getElementById('cta-signup-btn');
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const createProjectBtn = document.getElementById('create-project-btn');
+        const createProjectModal = document.getElementById('create-project-modal');
+        const closeModalBtns = document.querySelectorAll('.close');
+        const saveProjectBtn = document.getElementById('save-project-btn');
+        const loginBtn = document.getElementById('login-btn');
+        const signupBtn = document.getElementById('signup-btn');
+        const projectsContainer = document.getElementById('projects-container');
+        
+        // Auth state observer
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // User is signed in
+                console.log('User signed in:', user);
+                heroSection.style.display = 'none';
+                authForms.style.display = 'none';
+                dashboard.style.display = 'block';
+                loginLink.style.display = 'none';
+                logoutLink.style.display = 'block';
+                dashboardLink.style.display = 'block';
+                
+                // Load user's projects
+                loadProjects(user.uid);
+            } else {
+                // User is signed out
+                console.log('User signed out');
+                heroSection.style.display = 'block';
+                authForms.style.display = 'none';
+                dashboard.style.display = 'none';
+                loginLink.style.display = 'block';
+                logoutLink.style.display = 'none';
+                dashboardLink.style.display = 'none';
+            }
+        });
+        
+        // Event Listeners
+        getStartedBtn.addEventListener('click', () => {
+            heroSection.style.display = 'none';
+            authForms.style.display = 'block';
+        });
+        
+        ctaSignupBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            heroSection.style.display = 'none';
+            authForms.style.display = 'block';
+        });
+        
+        loginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            heroSection.style.display = 'none';
+            authForms.style.display = 'block';
+        });
+        
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut();
+        });
+        
+        authTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.getAttribute('data-tab');
+                
+                // Update active tab
+                authTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show correct form
+                if (tabName === 'login') {
+                    loginForm.classList.add('active');
+                    signupForm.classList.remove('active');
+                } else {
+                    loginForm.classList.add('active');
+                    signupForm.classList.remove('active');
+                    signupForm.classList.add('active');
+                    loginForm.classList.remove('active');
+                }
             });
-            
-            // Smooth scrolling for navigation links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    if (this.getAttribute('href') !== '#') {
-                        e.preventDefault();
-                        const target = document.querySelector(this.getAttribute('href'));
-                        if (target) {
-                            target.scrollIntoView({
-                                behavior: 'smooth'
-                            });
-                        }
-                    }
-                });
+        });
+        
+        createProjectBtn.addEventListener('click', () => {
+            createProjectModal.style.display = 'flex';
+        });
+        
+        closeModalBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                createProjectModal.style.display = 'none';
             });
+        });
+        
+        saveProjectBtn.addEventListener('click', () => {
+            const projectName = document.getElementById('project-name').value;
+            const projectDesc = document.getElementById('project-desc').value;
+            const isPublic = document.getElementById('project-public').checked;
+            
+            if (!projectName) {
+                alert('Please enter a project name');
+                return;
+            }
+            
+            const user = auth.currentUser;
+            if (user) {
+                // Save project to Firestore
+                db.collection('projects').add({
+                    name: projectName,
+                    description: projectDesc,
+                    isPublic: isPublic,
+                    userId: user.uid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                .then(() => {
+                    createProjectModal.style.display = 'none';
+                    document.getElementById('project-name').value = '';
+                    document.getElementById('project-desc').value = '';
+                    document.getElementById('project-public').checked = false;
+                    
+                    // Reload projects
+                    loadProjects(user.uid);
+                })
+                .catch(error => {
+                    console.error('Error adding project: ', error);
+                    alert('Error creating project: ' + error.message);
+                });
+            }
+        });
+        
+        loginBtn.addEventListener('click', () => {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                document.getElementById('login-error').textContent = 'Please enter both email and password';
+                document.getElementById('login-error').style.display = 'block';
+                return;
+            }
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Signed in 
+                    document.getElementById('login-error').style.display = 'none';
+                })
+                .catch((error) => {
+                    document.getElementById('login-error').textContent = error.message;
+                    document.getElementById('login-error').style.display = 'block';
+                });
+        });
+        
+        signupBtn.addEventListener('click', () => {
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const name = document.getElementById('signup-name').value;
+            
+            if (!email || !password || !name) {
+                document.getElementById('signup-error').textContent = 'Please fill all fields';
+                document.getElementById('signup-error').style.display = 'block';
+                return;
+            }
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Signed up 
+                    const user = userCredential.user;
+                    
+                    // Update user profile
+                    return user.updateProfile({
+                        displayName: name
+                    });
+                })
+                .then(() => {
+                    document.getElementById('signup-error').style.display = 'none';
+                })
+                .catch((error) => {
+                    document.getElementById('signup-error').textContent = error.message;
+                    document.getElementById('signup-error').style.display = 'block';
+                });
+        });
+        
+        // Load user's projects from Firestore
+        function loadProjects(userId) {
+            projectsContainer.innerHTML = '<p>Loading projects...</p>';
+            
+            db.collection('projects')
+                .where('userId', '==', userId)
+                .orderBy('createdAt', 'desc')
+                .get()
+                .then((querySnapshot) => {
+                    projectsContainer.innerHTML = '';
+                    
+                    if (querySnapshot.empty) {
+                        projectsContainer.innerHTML = `
+                            <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                                <h3>No projects yet</h3>
+                                <p>Create your first project to start tracking stats</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    querySnapshot.forEach((doc) => {
+                        const project = doc.data();
+                        const projectId = doc.id;
+                        
+                        const projectCard = document.createElement('div');
+                        projectCard.className = 'project-card';
+                        projectCard.innerHTML = `
+                            <h3>${project.name}</h3>
+                            <p>${project.description || 'No description'}</p>
+                            <div class="toggle-label">
+                                <span>${project.isPublic ? 'Public' : 'Private'}</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${project.isPublic ? 'checked' : ''} 
+                                        onchange="toggleProjectPrivacy('${projectId}', this.checked)">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="project-actions">
+                                <button class="btn btn-gray">View Stats</button>
+                                <button class="btn btn-primary">Add Tracking</button>
+                            </div>
+                        `;
+                        
+                        projectsContainer.appendChild(projectCard);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error loading projects: ', error);
+                    projectsContainer.innerHTML = '<p>Error loading projects. Please try again.</p>';
+                });
+        }
+        
+        // Toggle project privacy
+        function toggleProjectPrivacy(projectId, isPublic) {
+            db.collection('projects').doc(projectId).update({
+                isPublic: isPublic
+            })
+            .then(() => {
+                console.log('Project privacy updated');
+            })
+            .catch((error) => {
+                console.error('Error updating project privacy: ', error);
+                alert('Error updating project privacy');
+            });
+        }
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === createProjectModal) {
+                createProjectModal.style.display = 'none';
+            }
         });
     </script>
 </body>
