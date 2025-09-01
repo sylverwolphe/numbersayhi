@@ -8,6 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -380,6 +381,27 @@
             margin-bottom: 0.5rem;
         }
 
+        /* QR Code Modal */
+        .qrcode-container {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        #qrcode {
+            display: inline-block;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .share-link {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: var(--light-gray);
+            border-radius: 6px;
+            word-break: break-all;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .nav-links {
@@ -517,17 +539,32 @@
         </div>
     </div>
 
+    <!-- Share Study Modal -->
+    <div class="modal" id="share-study-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Share Your Study</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="qrcode-container">
+                <div id="qrcode"></div>
+                <div class="share-link" id="share-link"></div>
+            </div>
+            <p>Scan the QR code or share the link to collect responses</p>
+        </div>
+    </div>
+
     <!-- Firebase Configuration -->
     <script>
-        // Firebase configuration - REPLACE WITH YOUR OWN CONFIG
+        // Firebase configuration
         const firebaseConfig = {
-  apiKey: "AIzaSyA0NHovIKAxxdCJLXz5leMEgrsTeiIGs_c",
-  authDomain: "numbersayhifyi.firebaseapp.com",
-  projectId: "numbersayhifyi",
-  storageBucket: "numbersayhifyi.firebasestorage.app",
-  messagingSenderId: "276303719867",
-  appId: "1:276303719867:web:07c3d314bd4f70a6c5289e"
-};
+            apiKey: "AIzaSyA0NHovIKAxxdCJLXz5leMEgrsTeiIGs_c",
+            authDomain: "numbersayhifyi.firebaseapp.com",
+            projectId: "numbersayhifyi",
+            storageBucket: "numbersayhifyi.firebasestorage.app",
+            messagingSenderId: "276303719867",
+            appId: "1:276303719867:web:07c3d314bd4f70a6c5289e"
+        };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -544,6 +581,7 @@
         const createProjectModal = document.getElementById('create-project-modal');
         const createStudyModal = document.getElementById('create-study-modal');
         const viewStudyModal = document.getElementById('view-study-modal');
+        const shareStudyModal = document.getElementById('share-study-modal');
         const closeModalBtns = document.querySelectorAll('.close');
         const saveProjectBtn = document.getElementById('save-project-btn');
         const saveStudyBtn = document.getElementById('save-study-btn');
@@ -553,8 +591,9 @@
         // State variables
         let currentProjectId = null;
         let selectedStudyType = null;
+        let currentStudyId = null;
         
-        // Auth state observer
+        // Check if user is logged in
         auth.onAuthStateChanged(user => {
             if (user) {
                 // User is signed in
@@ -564,7 +603,7 @@
                 // Load user's projects
                 loadProjects(user.uid);
             } else {
-                // User is signed out, redirect to login
+                // User is signed out, redirect to login page
                 window.location.href = 'index.html';
             }
         });
@@ -572,7 +611,9 @@
         // Event Listeners
         logoutLink.addEventListener('click', (e) => {
             e.preventDefault();
-            auth.signOut();
+            auth.signOut().then(() => {
+                window.location.href = 'index.html';
+            });
         });
         
         createProjectBtn.addEventListener('click', () => {
@@ -584,6 +625,7 @@
                 createProjectModal.style.display = 'none';
                 createStudyModal.style.display = 'none';
                 viewStudyModal.style.display = 'none';
+                shareStudyModal.style.display = 'none';
             });
         });
         
@@ -702,13 +744,29 @@
                         </div>
                         <div class="form-group">
                             <label>Questions</label>
-                            <div style="border: 1px solid #eee; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
-                                <input type="text" class="form-control" value="How did you hear about us?" style="margin-bottom: 8px;">
-                                <input type="text" class="form-control" value="What can we improve?">
+                            <div id="survey-questions" style="margin-bottom: 1rem;">
+                                <div class="survey-question" style="margin-bottom: 0.5rem;">
+                                    <input type="text" class="form-control" value="How did you hear about us?" style="margin-bottom: 8px;">
+                                </div>
+                                <div class="survey-question" style="margin-bottom: 0.5rem;">
+                                    <input type="text" class="form-control" value="What can we improve?">
+                                </div>
                             </div>
-                            <button class="btn btn-outline" style="width: 100%;">+ Add Question</button>
+                            <button type="button" class="btn btn-outline" id="add-question-btn" style="width: 100%;">+ Add Question</button>
                         </div>
                     `;
+                    
+                    // Add event listener for adding questions
+                    document.getElementById('add-question-btn').addEventListener('click', () => {
+                        const questionsContainer = document.getElementById('survey-questions');
+                        const newQuestion = document.createElement('div');
+                        newQuestion.className = 'survey-question';
+                        newQuestion.style.marginBottom = '0.5rem';
+                        newQuestion.innerHTML = `
+                            <input type="text" class="form-control" placeholder="Enter your question">
+                        `;
+                        questionsContainer.appendChild(newQuestion);
+                    });
                     break;
             }
         }
@@ -723,14 +781,51 @@
             }
             
             if (currentProjectId) {
+                // Get configuration based on study type
+                let config = {};
+                switch(selectedStudyType) {
+                    case 'feedback':
+                        config = {
+                            question: document.getElementById('feedback-question').value,
+                            allowComments: document.getElementById('feedback-comments').checked
+                        };
+                        break;
+                    case 'counter':
+                        config = {
+                            counterName: document.getElementById('counter-name').value,
+                            dailyGoal: document.getElementById('counter-goal').value || null
+                        };
+                        break;
+                    case 'abtest':
+                        config = {
+                            variantA: document.getElementById('variant-a').value,
+                            variantB: document.getElementById('variant-b').value,
+                            metric: document.getElementById('ab-metric').value
+                        };
+                        break;
+                    case 'survey':
+                        const questions = [];
+                        document.querySelectorAll('#survey-questions .survey-question input').forEach(input => {
+                            if (input.value.trim()) {
+                                questions.push(input.value.trim());
+                            }
+                        });
+                        config = {
+                            title: document.getElementById('survey-title').value,
+                            questions: questions
+                        };
+                        break;
+                }
+                
                 // Save study to Firestore
                 db.collection('projects').doc(currentProjectId).collection('studies').add({
                     name: studyName,
                     type: selectedStudyType,
+                    config: config,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    // Additional configuration would be saved here based on type
+                    responses: 0
                 })
-                .then(() => {
+                .then((docRef) => {
                     createStudyModal.style.display = 'none';
                     document.getElementById('study-name').value = '';
                     
@@ -861,9 +956,8 @@
             let html = '';
             
             studies.forEach(study => {
-                // Generate mock data for demonstration
-                const totalResponses = Math.floor(Math.random() * 100) + 10;
-                const positiveRate = Math.floor(Math.random() * 30) + 65;
+                // Use actual data from Firestore
+                const totalResponses = study.responses || 0;
                 
                 html += `
                     <div class="study-card" data-study-id="${study.id}" data-project-id="${projectId}">
@@ -871,19 +965,15 @@
                             <h3>${study.name}</h3>
                             <span class="study-type">${study.type}</span>
                         </div>
-                        <p>Collecting feedback from customers</p>
+                        <p>${getStudyDescription(study)}</p>
                         <div class="study-metrics">
                             <div class="metric">
                                 <div class="metric-value">${totalResponses}</div>
                                 <div class="metric-label">Responses</div>
                             </div>
                             <div class="metric">
-                                <div class="metric-value">${positiveRate}%</div>
-                                <div class="metric-label">Positive</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value">${Math.floor(totalResponses/7)}</div>
-                                <div class="metric-label">Today</div>
+                                <div class="metric-value">${getStudySecondaryMetric(study)}</div>
+                                <div class="metric-label">${getStudyMetricLabel(study)}</div>
                             </div>
                         </div>
                         <div class="study-actions">
@@ -904,6 +994,53 @@
             return html;
         }
         
+        // Helper functions for study display
+        function getStudyDescription(study) {
+            switch(study.type) {
+                case 'feedback':
+                    return `Collecting feedback: ${study.config.question}`;
+                case 'counter':
+                    return `Tracking: ${study.config.counterName}`;
+                case 'abtest':
+                    return `A/B Test: ${study.config.variantA} vs ${study.config.variantB}`;
+                case 'survey':
+                    return `Survey: ${study.config.questions.length} questions`;
+                default:
+                    return 'Collecting data';
+            }
+        }
+        
+        function getStudySecondaryMetric(study) {
+            // For now, return a placeholder - in a real app, you'd calculate this from actual data
+            switch(study.type) {
+                case 'feedback':
+                    return '75%';
+                case 'counter':
+                    return '24 today';
+                case 'abtest':
+                    return '55% A';
+                case 'survey':
+                    return '92% complete';
+                default:
+                    return '0';
+            }
+        }
+        
+        function getStudyMetricLabel(study) {
+            switch(study.type) {
+                case 'feedback':
+                    return 'Positive';
+                case 'counter':
+                    return 'Today';
+                case 'abtest':
+                    return 'Variant A';
+                case 'survey':
+                    return 'Completion';
+                default:
+                    return 'Metric';
+            }
+        }
+        
         // Add event listeners to study cards
         function addStudyCardEventListeners(projectId) {
             // Add study button
@@ -921,41 +1058,81 @@
             });
             
             // View study button
-            document.querySelectorAll(`.view-study[data-project-id="${projectId}"]`).forEach(btn => {
+            document.querySelectorAll(`.view-study`).forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const studyCard = e.target.closest('.study-card');
                     const studyId = studyCard.getAttribute('data-study-id');
                     const projectId = studyCard.getAttribute('data-project-id');
                     
-                    // For demonstration, we'll just show a simple view
-                    document.getElementById('view-study-title').textContent = 'Study Details';
-                    document.getElementById('study-content').innerHTML = `
-                        <h3>${studyCard.querySelector('h3').textContent}</h3>
-                        <p>This is where you would see detailed analytics for your study.</p>
-                        <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-top: 1rem;">
-                            <h4>Quick Actions</h4>
-                            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                                <button class="btn btn-primary">View Responses</button>
-                                <button class="btn btn-outline">Generate QR Code</button>
-                                <button class="btn btn-outline">Export Data</button>
-                            </div>
-                        </div>
-                    `;
-                    
-                    viewStudyModal.style.display = 'flex';
+                    // Load study details
+                    db.collection('projects').doc(projectId).collection('studies').doc(studyId).get()
+                        .then((doc) => {
+                            if (doc.exists) {
+                                const study = doc.data();
+                                document.getElementById('view-study-title').textContent = study.name;
+                                document.getElementById('study-content').innerHTML = `
+                                    <h3>${study.name}</h3>
+                                    <p>Type: ${study.type}</p>
+                                    <p>Created: ${new Date(study.createdAt.seconds * 1000).toLocaleDateString()}</p>
+                                    <p>Total Responses: ${study.responses || 0}</p>
+                                    <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-top: 1rem;">
+                                        <h4>Quick Actions</h4>
+                                        <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+                                            <button class="btn btn-primary" onclick="viewResponses('${projectId}', '${studyId}')">View Responses</button>
+                                            <button class="btn btn-outline" onclick="shareStudy('${projectId}', '${studyId}')">Generate QR Code</button>
+                                            <button class="btn btn-outline">Export Data</button>
+                                        </div>
+                                    </div>
+                                `;
+                                
+                                viewStudyModal.style.display = 'flex';
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error loading study:', error);
+                            alert('Error loading study details');
+                        });
                 });
             });
             
             // Share study button
-            document.querySelectorAll(`.share-study[data-project-id="${projectId}"]`).forEach(btn => {
+            document.querySelectorAll(`.share-study`).forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const studyCard = e.target.closest('.study-card');
                     const studyId = studyCard.getAttribute('data-study-id');
                     const projectId = studyCard.getAttribute('data-project-id');
                     
-                    alert('This would generate a shareable link or QR code for your study');
+                    shareStudy(projectId, studyId);
                 });
             });
+        }
+        
+        // Share study function
+        function shareStudy(projectId, studyId) {
+            // For a real implementation, you would have a public URL for your study
+            // For now, we'll create a mock URL
+            const studyUrl = `${window.location.origin}/study.html?project=${projectId}&study=${studyId}`;
+            
+            // Generate QR code
+            document.getElementById('share-link').textContent = studyUrl;
+            QRCode.toCanvas(document.getElementById('qrcode'), studyUrl, {
+                width: 200,
+                margin: 1,
+                color: {
+                    dark: '#000000',
+                    light: '#ffffff'
+                }
+            }, function(error) {
+                if (error) console.error(error);
+            });
+            
+            shareStudyModal.style.display = 'flex';
+        }
+        
+        // View responses function
+        function viewResponses(projectId, studyId) {
+            // This would show the actual responses in a modal or separate page
+            alert(`This would show responses for study ${studyId} in project ${projectId}`);
         }
         
         // Close modal when clicking outside
@@ -968,6 +1145,9 @@
             }
             if (e.target === viewStudyModal) {
                 viewStudyModal.style.display = 'none';
+            }
+            if (e.target === shareStudyModal) {
+                shareStudyModal.style.display = 'none';
             }
         });
     </script>
