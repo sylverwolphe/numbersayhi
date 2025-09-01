@@ -991,23 +991,27 @@
         let currentStudyUrl = null;
         
         // Check if user is logged in
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                console.log('User signed in:', user);
-                dashboard.style.display = 'block';
-                
-                const isNewUser = localStorage.getItem('numbersayhi_onboarded') !== 'true';
-                if (isNewUser) {
-                    onboarding.style.display = 'flex';
-                } else {
-                    onboarding.style.display = 'none';
-                }
-                
-                loadProjects(user.uid);
-            } else {
-                window.location.href = 'index.html';
-            }
-        });
+       auth.onAuthStateChanged(user => {
+    if (user) {
+        console.log('User signed in:', user);
+        dashboard.style.display = 'block';
+        
+        const isNewUser = localStorage.getItem('numbersayhi_onboarded') !== 'true';
+        if (isNewUser) {
+            onboarding.style.display = 'flex';
+        } else {
+            onboarding.style.display = 'none';
+        }
+        
+        loadProjects(user.uid);
+    } else {
+        // FIXED: Only redirect if not already on login page
+        if (!window.location.pathname.includes('index.html')) {
+            console.log('Redirecting to login...');
+            window.location.replace('index.html');
+        }
+    }
+});
         
         // Event Listeners
         logoutLink.addEventListener('click', (e) => {
