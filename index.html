@@ -1085,7 +1085,6 @@
         });
         
         // Event delegation for all project container clicks
-        projectsContainer.addEventListener('click', handleProjectContainerClick);
         
         function handleProjectContainerClick(e) {
             e.stopPropagation();
@@ -1893,6 +1892,8 @@
                 new Chart(chartCtx, chartData);
             }, 100);
         }
+        projectsContainer.addEventListener('click', handleProjectContainerClick);
+
     </script>
 </body>
 </html>
